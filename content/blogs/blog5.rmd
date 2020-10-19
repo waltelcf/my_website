@@ -3,16 +3,16 @@ categories:
 - ""
 - ""
 date: "2017-10-31T22:42:51-05:00"
-description: Ananlysis of DJIA stock
+description: Ananlysis of IMBD rating
 draft: false
 #image: pic07.jpg
 keywords: ""
 slug: blog5
-title: DJIA
+title: IMBD
 ---
 
-
 ```{r, setup, echo=FALSE}
+
 knitr::opts_chunk$set(
   message = FALSE, 
   warning = FALSE, 
@@ -29,168 +29,152 @@ knitr::opts_chunk$set(
 ```
 
 
-```{r load-libraries, warning=FALSE, message=FALSE, echo=FALSE}
-library(tidyverse)  # Load ggplot2, dplyr, and all the other tidyverse packages
+```{r load-libraries, echo=FALSE}
+
+ # Load ggplot2, dplyr, and all the other tidyverse packages
+library(tidyverse) 
 library(mosaic)
 library(ggthemes)
-library(lubridate)
-library(fivethirtyeight)
+library(GGally)
+library(readxl)
 library(here)
 library(skimr)
 library(janitor)
-library(vroom)
+library(broom)
 library(tidyquant)
-library(rvest)    # scrape websites
-library(purrr)  
-library(lubridate) #to handle dates
-```
-
-
-
-# Returns of financial stocks
-
-
-Next, let's choose the [Dow Jones Industrial Aveareg (DJIA)](https://en.wikipedia.org/wiki/Dow_Jones_Industrial_Average) stocks and their ticker symbols and download some data. Besides the thirty stocks that make up the DJIA, we will also add `SPY` which is an SP500 ETF (Exchange Traded Fund).
-
-
-```{r, tickers_from_wikipedia}
-
-djia_url <- "https://en.wikipedia.org/wiki/Dow_Jones_Industrial_Average"
-
-#get tables that exist on URL
-tables <- djia_url %>% 
-  read_html() %>% 
-  html_nodes(css="table")
-
-
-# parse HTML tables into a dataframe called djia. 
-# Use purr::map() to create a list of all tables in URL
-djia <- map(tables, . %>% 
-               html_table(fill=TRUE)%>% 
-               clean_names())
-
-
-# constituents
-table1 <- djia[[2]] %>% # the second table on the page contains the ticker symbols
-  mutate(date_added = ymd(date_added),
-         
-         # if a stock is listed on NYSE, its symbol is, e.g., NYSE: MMM
-         # We will get prices from yahoo finance which requires just the ticker
-         
-         # if symbol contains "NYSE*", the * being a wildcard
-         # then we jsut drop the first 6 characters in that string
-         ticker = ifelse(str_detect(symbol, "NYSE*"),
-                          str_sub(symbol,7,11),
-                          symbol)
-         )
-
-# we need a vector of strings with just the 30 tickers + SPY
-tickers <- table1 %>% 
-  select(ticker) %>% 
-  pull() %>% # pull() gets them as a sting of characters
-  c("SPY") # and lets us add SPY, the SP500 ETF
+library(infer)
+library(openintro)
+library(tidyquant)
 
 ```
 
+We will explore whether the mean IMDB rating for Steven Spielberg and Tim Burton are the same or not. 
 
+> Before anything, write down the null and alternative hypotheses, as well as the resulting test statistic and the associated t-stat or p-value. 
+>
+H0: Mean IMDB rating for Steven Spielberg and Tim Burton are NOT significantly different.
+H1: Mean IMDB rating for Steven Spielberg and Tim Burton are significantly different.
 
+*Here we examine the data set*
 
-```{r get_price_data, message=FALSE, warning=FALSE, cache=TRUE}
-# Notice the cache=TRUE argument in the chunk options. Because getting data is time consuming, # cache=TRUE means that once it downloads data, the chunk will not run again next time you knit your Rmd
+```{r load-movies-data}
+movies <- read_csv(here::here("data", "movies.csv"))
+glimpse(movies)
 
-myStocks <- tickers %>% 
-  tq_get(get  = "stock.prices",
-         from = "2000-01-01",
-         to   = "2020-08-31") %>%
-  group_by(symbol) 
-
-glimpse(myStocks) # examine the structure of the resulting data frame
+#We skim for missing values
+skim(movies)
 ```
 
-Financial performance analysis depend on returns; If I buy a stock today for 100 and I sell it tomorrow for 101.75, my one-day return, assuming no transaction costs, is 1.75%. So given the adjusted closing prices, our first step is to calculate daily and monthly returns.
+
+## Ratings on Steven Spielberg's Films
 
 
-```{r calculate_returns, message=FALSE, warning=FALSE}
-#calculate daily returns
-myStocks_returns_daily <- myStocks %>%
-  tq_transmute(select     = adjusted, 
-               mutate_fun = periodReturn, 
-               period     = "daily", 
-               type       = "log",
-               col_rename = "daily_returns",
-               cols = c(nested.col))  
+```{r}
+#creating the new data set
+CI_steve <- movies %>%
+  filter(director=="Steven Spielberg") %>% 
+  summarise(mean_rating = mean(rating),
+            sd_rating = sd(rating),
+            count = n(),
+            se_rating = sd_rating/sqrt(count),
+            t_critical = qt(0.975, count-1), 
+            margin_of_error = t_critical * se_rating,
+            lower = mean_rating - t_critical * se_rating,
+            upper = mean_rating + t_critical * se_rating
+            )%>% 
+ add_column(name="Steven Spielberg")
 
-#calculate monthly  returns
-myStocks_returns_monthly <- myStocks %>%
-  tq_transmute(select     = adjusted, 
-               mutate_fun = periodReturn, 
-               period     = "monthly", 
-               type       = "arithmetic",
-               col_rename = "monthly_returns",
-               cols = c(nested.col)) 
+#t.test to get CI Steve
+steve_ratings <- movies %>%
+  filter(director=="Steven Spielberg") %>% 
+  select(rating,director)
 
-#calculate yearly returns
-myStocks_returns_annual <- myStocks %>%
-  group_by(symbol) %>%
-  tq_transmute(select     = adjusted, 
-               mutate_fun = periodReturn, 
-               period     = "yearly", 
-               type       = "arithmetic",
-               col_rename = "yearly_returns",
-               cols = c(nested.col))
-```
-
-Create a dataframe and assign it to a new object, where you summarise monthly returns since 2017-01-01 for each of the stocks and `SPY`; min, max, median, mean, SD.
-
-```{r summarise_monthly_returns}
-# YOUR CODE GOES HERE
-summarise_monthly_returns <- myStocks_returns_monthly %>%
-  group_by(symbol) %>%
-  summarise(min_return=min(monthly_returns),max_return=max(monthly_returns),
-            median_return=median(monthly_returns),average_return=mean(monthly_returns),
-            standard_deviation=STDEV(monthly_returns))
-summarise_monthly_returns
+t.test(steve_ratings$rating, data=steve_ratings)
 
 ```
 
 
-Plot a density plot, using `geom_density()`, for each of the stocks
-```{r density_monthly_returns}
-# YOUR CODE GOES HERE
+## Ratings on Tim Burton's Films
+
+
+```{r}
+#creating the new data set
+CI_tim <- movies %>%
+  filter(director=="Tim Burton") %>% 
+  summarise(mean_rating = mean(rating),
+            sd_rating = sd(rating),
+            count = n(),
+            se_rating = sd_rating/sqrt(count),
+            t_critical = qt(0.975, count-1), 
+            margin_of_error = t_critical * se_rating,
+            lower = mean_rating - t_critical * se_rating,
+            upper = mean_rating + t_critical * se_rating
+            ) %>% 
+ add_column(name="Tim Burton")
+
+#t.test to get CI Tim
+tim_ratings <- movies %>%
+  filter(director=="Tim Burton") %>% 
+  select(rating,director)
+
+t.test(tim_ratings$rating, data=tim_ratings)
+
+```
+
+##Visualization of confidence intervals for both directors
+
+
+```{r,fig.width=9,fig.height=5.5}
+
+#Join the two datasets regarding CI on both directors.
+
+comp_rating <- full_join(CI_steve,CI_tim)
+
+comp_rating
+
+#Visualize the CIs using ggplot. 
+comp_rating %>%
+  ggplot(aes(x=mean_rating,
+             y=reorder(name,mean_rating))) +
+  geom_point(color=c("#FA766D","#06BFC4"),
+             size=4) +
+  geom_errorbar(aes(xmin=lower,xmax=upper),
+                width=0.07,
+                color=c("#FA766D","#06BFC4"),
+                size=1.5) +
   
-myStocks_returns_monthly %>%
-  group_by(symbol)%>%
-  ggplot(aes(x=monthly_returns))+
-    geom_density()+
-    facet_wrap(~symbol)+
-    theme_hc()
-
-myStocks_returns_monthly %>%
-  group_by(symbol)%>%
-  ggplot(aes(x=monthly_returns,color=symbol))+
-    geom_density(fill="white",position="identity")+
-    theme_hc()
-
-myStocks_returns_monthly %>%
-  group_by(symbol)%>%
-  summarise(kurtosis=kurtosis(monthly_returns), standard_deviation=STDEV(monthly_returns))%>%
-  arrange(desc(standard_deviation))
+  #We add the grey area to show the overlap.
+  geom_rect(mapping=aes(xmin = 7.27, xmax = 7.33, ymin = -Inf, ymax = Inf),
+            fill="#C8C8C8",
+            alpha=0.4) +
+  
+  #We add the labels
+  geom_text(aes(label=round(lower,2)), 
+            vjust=-1.5,
+            hjust=3,
+            angle=0, 
+            color="black", 
+            size=4) +
+  geom_text(aes(label=round(upper,2)), 
+            vjust=-1.5,
+            hjust=-2,
+            angle=0, 
+            color="black", 
+            size=4) +
+  geom_text(aes(label=round(mean_rating,2)), 
+            vjust=-2,
+            colour= "black", 
+            size= 5) +
+  
+  #We add the theme and titles.
+  theme_minimal()+
+  labs(title="Spielberg's & Burton's confidence intervals overlap",
+       subtitle = "95% confidence interval overlap",
+       x= "IMDB Rating scale", 
+       y="") + 
+  
+  #We add a frame around the ggplot.
+   theme(panel.background = element_rect(colour = "black", size=1))
+  
 ```
 
-What can you infer from this plot? Which stock is the riskiest? The least risky? 
-
-> TYPE YOUR ANSWER AFTER (AND OUTSIDE!) THIS BLOCKQUOTE.
-
-Finally, produce a plot that shows the expected monthly return (mean) of a stock on the Y axis and the risk (standard deviation) in the X-axis. Please use `ggrepel::geom_text_repel()` to label each stock with its ticker symbol
-
-```{r risk_return_plot}
-# YOUR CODE GOES HERE
-summarise_monthly_returns %>%
-  ggplot(aes(x=average_return,y=standard_deviation,label=symbol))+
-  geom_point()+
-  ggrepel::geom_text_repel()
-
-
-```
-
-What can you infer from this plot? Are there any stocks which, while being riskier, do not have a higher expected return?
