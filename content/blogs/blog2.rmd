@@ -1,0 +1,180 @@
+---
+categories:
+- ""
+- ""
+date: "2017-10-31T22:26:09-05:00"
+description: Lorem Etiam Nullam
+draft: false
+image: Bike.jpg
+keywords: ""
+slug: blog2
+title: Excess Rentals Bike Sharing
+---
+
+```{r, setup, include=FALSE}
+knitr::opts_chunk$set(
+  message = FALSE, 
+  warning = FALSE, 
+  tidy=FALSE,     
+  size="small")   
+options(digits = 3)
+
+
+knitr::opts_chunk$set(
+  fig.width=6.75, 
+  fig.height=6.75,
+  fig.align = "center"
+)
+```
+
+
+```{r load-libraries, include=FALSE}
+library(tidyverse)
+library(mosaic)
+library(ggthemes)
+library(lubridate)
+library(here)
+library(skimr)
+library(janitor)
+library(httr)
+library(readxl)
+library(vroom)
+```
+
+```{r}
+url <- "https://data.london.gov.uk/download/number-bicycle-hires/ac29363e-e0cb-47cc-a97a-e216d900a6b0/tfl-daily-cycle-hires.xlsx"
+
+# Download TFL data to temporary file
+httr::GET(url, write_disk(bike.temp <- tempfile(fileext = ".xlsx")))
+```
+
+```{r}
+# Use read_excel to read it as dataframe
+bike0 <- read_excel(bike.temp,
+                   sheet = "Data",
+                   range = cell_cols("A:B"))
+
+# change dates to get year, month, and week
+bike <- bike0 %>% 
+  clean_names() %>% 
+  dplyr::rename (bikes_hired = number_of_bicycle_hires) %>% 
+  mutate (year = year(day),
+          month = lubridate::month(day, label = TRUE),
+          week = isoweek(day))
+```
+We can easily create a facet grid that plots bikes hired by month and year.
+
+
+```{r}
+#We first start by calculating the historic monthly average between 2015 and 2019
+historic_average <- bike %>%
+  filter(year %in% c(2015,2016,2017,2018,2019))%>%
+  group_by(month)%>%
+  summarise(monthly_historic_average=mean(bikes_hired, na.rm = TRUE))
+historic_average
+
+#Second, we calculate the monthly average for each year since 2015
+monthly_bike <- bike %>%
+  filter(year %in% c(2015,2016,2017,2018,2019,2020))%>%
+  group_by(year,month)%>%
+  summarise(monthly_average = mean(bikes_hired, na.rm=TRUE))
+
+monthly_bike
+
+#Here we merge the historic average and the monthly average for each year to directly compare both in a data set
+monthly_average_bike <- merge(monthly_bike,historic_average)
+
+monthly_average_bike
+```
+
+```{r,fig.height=10,fig.width=15}
+#Here we visualize the planned comparison
+plot_monthly_average_bike <- monthly_average_bike %>%
+  ggplot(aes(x=month,group=1))+
+  geom_line(aes(y=monthly_average), size=0.6)+
+  geom_line(aes(y=monthly_historic_average),color="blue",size=0.6)+
+  geom_ribbon(aes(ymin = monthly_historic_average, 
+                  ymax = pmin(monthly_average,monthly_historic_average), 
+                  fill = "State lower")) +
+  geom_ribbon(aes(ymin = monthly_average, 
+                  ymax = pmin(monthly_average,monthly_historic_average), 
+                  fill = "State higher"))+
+  scale_fill_manual(values=alpha(c("green","tomato"),0.3))+
+  theme_minimal()+
+  labs(title = "COVID-19 has significantly affected monthly Tfl bike travel",
+       subtitle = "Monthly difference from 2015-2019 monthly average from the start of 2015 to the end of August 2020",
+       caption = "Source: Tfl, London Data Store",
+       x= "", y = "Bike rentals")+
+  theme(legend.position ="none",title = element_text(size=12),axis.title = element_text(size=12),axis.text = element_text(size = 10), strip.text = element_text(size=10), plot.margin = margin(0.5,0.5,0.5,0.5, "cm"))+
+  facet_wrap(~year)
+plot_monthly_average_bike
+```
+
+```{r}
+library(grid)
+
+
+#We first start by calculating the historic weekly average between 2015 and 2019
+historic_weeklyaverage <- bike %>%
+  filter(year %in% c(2015,2016,2017,2018,2019))%>%
+  group_by(week)%>%
+  dplyr::summarise(weekly_historic_average=mean(bikes_hired, na.rm = TRUE))
+historic_weeklyaverage
+
+#Second, we calculate the weekly average for each year since 2015
+weekly_bike <- bike %>%
+  filter(year %in% c(2015,2016,2017,2018,2019,2020))%>%
+  group_by(year,week)%>%
+  dplyr::summarise(weekly_average = mean(bikes_hired, na.rm=TRUE))
+weekly_bike
+
+#Here we merge the historic average and the weekly average for each year to directly compare both in a data set
+weekly_average_bike <- merge(weekly_bike,historic_weeklyaverage, na.rm=TRUE)
+
+#We then proceed by creating one variable called "weekly_diff_percent" which gives the percentage difference between the historic average and the respective weekly average
+weekly_difference <- weekly_average_bike %>%
+  group_by(year,week)%>%
+  dplyr::summarise(weekly_diff_percent = ((weekly_average-weekly_historic_average)/weekly_historic_average))
+
+#We then have a data set with the year, week, and weekly percentage difference from the 2015-2019 weekly average
+weekly_difference
+```
+
+```{r,fig.height=10,fig.width=15}
+#We define weekly_diff_percent as Y for logical statements
+diff_percent <- weekly_difference$weekly_diff_percent
+
+#Here we visualize the planned comparison
+plot_weekly_difference <- weekly_difference %>%
+  ggplot(aes(x=week,y=weekly_diff_percent,group=1))+
+  
+#Adding the grey background for quarter 2 and quarter 4 
+  geom_rect(mapping=aes(xmin = 13, xmax = 26, ymin = -Inf, ymax = Inf),fill="#EDEDED",alpha=0.09)+
+  geom_rect(mapping=aes(xmin = 39, xmax = 53, ymin = -Inf, ymax = Inf),fill="#EDEDED",alpha=0.09)+
+#plotting the dataset  
+  geom_line()+
+  geom_ribbon(aes(ymin = pmin(weekly_diff_percent,0), 
+                  ymax = 0), 
+                  fill = alpha("tomato",0.2)) +
+  geom_ribbon(aes(ymin = 0, 
+                  ymax = pmax(weekly_diff_percent,0)), 
+                  fill = alpha("green",0.2))+
+#Here we need to make sure the colors change based on the color of the ribbon
+  geom_rug(sides="b",
+           colour=ifelse(diff_percent>0,"green","red"))+
+  theme_minimal()+
+  scale_y_continuous(labels = function(x) paste0(x*100, "%"))+
+  scale_x_continuous(breaks=c(13,26,39,53))+
+    labs(title = "Weekly Tfl Bike Travel significantly impacted by COVID Restrictions",
+       subtitle = "Percentage change from weekly averages calculated between 2015 and 2019",
+       caption = "Source: Tfl, London Data Store",
+       x= "week", y = "")+
+  theme(legend.position ="none",title = element_text(size=12),
+        axis.title = element_text(size=12),
+        axis.text = element_text(size = 10), 
+        strip.text = element_text(size=10), plot.margin = margin(0.5,0.5,0.5,0.5, "cm"))+
+  facet_wrap(~year)
+
+plot_weekly_difference
+```
+>Based on the two graphs above, we can observe that monthly and weekly activity can vary significantly from the average. Hence, given this strong variation, the Median would be a better metric to calculate expected rentals.

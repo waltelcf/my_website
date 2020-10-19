@@ -1,0 +1,281 @@
+---
+categories:
+- ""
+- ""
+date: "2017-10-31T22:26:09-05:00"
+description: Lorem Etiam Nullam
+draft: false
+image: Bike.jpg
+keywords: ""
+slug: blog2
+title: Excess Rentals Bike Sharing
+---
+
+
+
+<pre class="r"><code>url &lt;- &quot;https://data.london.gov.uk/download/number-bicycle-hires/ac29363e-e0cb-47cc-a97a-e216d900a6b0/tfl-daily-cycle-hires.xlsx&quot;
+
+# Download TFL data to temporary file
+httr::GET(url, write_disk(bike.temp &lt;- tempfile(fileext = &quot;.xlsx&quot;)))</code></pre>
+<pre><code>## Response [https://airdrive-secure.s3-eu-west-1.amazonaws.com/london/dataset/number-bicycle-hires/2020-09-18T09%3A06%3A54/tfl-daily-cycle-hires.xlsx?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAJJDIMAIVZJDICKHA%2F20201019%2Feu-west-1%2Fs3%2Faws4_request&amp;X-Amz-Date=20201019T232830Z&amp;X-Amz-Expires=300&amp;X-Amz-Signature=cc9e110f5fd6fb9519a4e5f2f9e9b33fc1aef4a2b3cf995291e8733b690719ef&amp;X-Amz-SignedHeaders=host]
+##   Date: 2020-10-19 23:29
+##   Status: 200
+##   Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+##   Size: 165 kB
+## &lt;ON DISK&gt;  C:\Users\walte\AppData\Local\Temp\RtmpeKvfqo\file88685e917173.xlsx</code></pre>
+<pre class="r"><code># Use read_excel to read it as dataframe
+bike0 &lt;- read_excel(bike.temp,
+                   sheet = &quot;Data&quot;,
+                   range = cell_cols(&quot;A:B&quot;))
+
+# change dates to get year, month, and week
+bike &lt;- bike0 %&gt;% 
+  clean_names() %&gt;% 
+  dplyr::rename (bikes_hired = number_of_bicycle_hires) %&gt;% 
+  mutate (year = year(day),
+          month = lubridate::month(day, label = TRUE),
+          week = isoweek(day))</code></pre>
+<p>We can easily create a facet grid that plots bikes hired by month and year.</p>
+<pre class="r"><code>#We first start by calculating the historic monthly average between 2015 and 2019
+historic_average &lt;- bike %&gt;%
+  filter(year %in% c(2015,2016,2017,2018,2019))%&gt;%
+  group_by(month)%&gt;%
+  summarise(monthly_historic_average=mean(bikes_hired, na.rm = TRUE))
+historic_average</code></pre>
+<pre><code>## # A tibble: 12 x 2
+##    month monthly_historic_average
+##    &lt;ord&gt;                    &lt;dbl&gt;
+##  1 Jan                     20259.
+##  2 Feb                     21566.
+##  3 Mar                     23115.
+##  4 Apr                     28230.
+##  5 May                     32422.
+##  6 Jun                     35262.
+##  7 Jul                     37809.
+##  8 Aug                     34243.
+##  9 Sep                     32433.
+## 10 Oct                     29900.
+## 11 Nov                     24365.
+## 12 Dec                     19218.</code></pre>
+<pre class="r"><code>#Second, we calculate the monthly average for each year since 2015
+monthly_bike &lt;- bike %&gt;%
+  filter(year %in% c(2015,2016,2017,2018,2019,2020))%&gt;%
+  group_by(year,month)%&gt;%
+  summarise(monthly_average = mean(bikes_hired, na.rm=TRUE))
+
+monthly_bike</code></pre>
+<pre><code>## # A tibble: 68 x 3
+## # Groups:   year [6]
+##     year month monthly_average
+##    &lt;dbl&gt; &lt;ord&gt;           &lt;dbl&gt;
+##  1  2015 Jan            18828.
+##  2  2015 Feb            19617.
+##  3  2015 Mar            22625.
+##  4  2015 Apr            27951.
+##  5  2015 May            29031.
+##  6  2015 Jun            34659.
+##  7  2015 Jul            36607.
+##  8  2015 Aug            33643.
+##  9  2015 Sep            30114.
+## 10  2015 Oct            28560.
+## # ... with 58 more rows</code></pre>
+<pre class="r"><code>#Here we merge the historic average and the monthly average for each year to directly compare both in a data set
+monthly_average_bike &lt;- merge(monthly_bike,historic_average)
+
+monthly_average_bike</code></pre>
+<pre><code>##    month year monthly_average monthly_historic_average
+## 1    Apr 2015           27951                    28230
+## 2    Apr 2016           25444                    28230
+## 3    Apr 2017           30591                    28230
+## 4    Apr 2018           27491                    28230
+## 5    Apr 2020           19702                    28230
+## 6    Apr 2019           29672                    28230
+## 7    Aug 2015           33643                    34243
+## 8    Aug 2016           37368                    34243
+## 9    Aug 2017           32071                    34243
+## 10   Aug 2018           34135                    34243
+## 11   Aug 2019           33997                    34243
+## 12   Aug 2020           37189                    34243
+## 13   Dec 2019           19099                    19218
+## 14   Dec 2018           18885                    19218
+## 15   Dec 2017           17229                    19218
+## 16   Dec 2016           21257                    19218
+## 17   Dec 2015           19618                    19218
+## 18   Feb 2015           19617                    21566
+## 19   Feb 2020           22103                    21566
+## 20   Feb 2019           24961                    21566
+## 21   Feb 2016           20608                    21566
+## 22   Feb 2018           20587                    21566
+## 23   Feb 2017           22091                    21566
+## 24   Jan 2015           18828                    20259
+## 25   Jan 2019           22123                    20259
+## 26   Jan 2018           20836                    20259
+## 27   Jan 2017           20596                    20259
+## 28   Jan 2020           22888                    20259
+## 29   Jan 2016           18914                    20259
+## 30   Jul 2015           36607                    37809
+## 31   Jul 2016           38336                    37809
+## 32   Jul 2017           36511                    37809
+## 33   Jul 2018           40423                    37809
+## 34   Jul 2019           37166                    37809
+## 35   Jul 2020           37723                    37809
+## 36   Jun 2015           34659                    35262
+## 37   Jun 2016           32108                    35262
+## 38   Jun 2017           36610                    35262
+## 39   Jun 2018           39388                    35262
+## 40   Jun 2019           33548                    35262
+## 41   Jun 2020           38601                    35262
+## 42   Mar 2015           22625                    23115
+## 43   Mar 2016           21435                    23115
+## 44   Mar 2020           17850                    23115
+## 45   Mar 2019           25557                    23115
+## 46   Mar 2017           26444                    23115
+## 47   Mar 2018           19514                    23115
+## 48   May 2015           29031                    32422
+## 49   May 2016           32699                    32422
+## 50   May 2017           32019                    32422
+## 51   May 2018           35893                    32422
+## 52   May 2019           32469                    32422
+## 53   May 2020           36149                    32422
+## 54   Nov 2018           24601                    24365
+## 55   Nov 2017           26403                    24365
+## 56   Nov 2016           23700                    24365
+## 57   Nov 2015           22817                    24365
+## 58   Nov 2019           24304                    24365
+## 59   Oct 2017           31409                    29900
+## 60   Oct 2018           31558                    29900
+## 61   Oct 2016           30488                    29900
+## 62   Oct 2015           28560                    29900
+## 63   Oct 2019           27484                    29900
+## 64   Sep 2016           35101                    32433
+## 65   Sep 2015           30114                    32433
+## 66   Sep 2017           31158                    32433
+## 67   Sep 2018           33607                    32433
+## 68   Sep 2019           32186                    32433</code></pre>
+<pre class="r"><code>#Here we visualize the planned comparison
+plot_monthly_average_bike &lt;- monthly_average_bike %&gt;%
+  ggplot(aes(x=month,group=1))+
+  geom_line(aes(y=monthly_average), size=0.6)+
+  geom_line(aes(y=monthly_historic_average),color=&quot;blue&quot;,size=0.6)+
+  geom_ribbon(aes(ymin = monthly_historic_average, 
+                  ymax = pmin(monthly_average,monthly_historic_average), 
+                  fill = &quot;State lower&quot;)) +
+  geom_ribbon(aes(ymin = monthly_average, 
+                  ymax = pmin(monthly_average,monthly_historic_average), 
+                  fill = &quot;State higher&quot;))+
+  scale_fill_manual(values=alpha(c(&quot;green&quot;,&quot;tomato&quot;),0.3))+
+  theme_minimal()+
+  labs(title = &quot;COVID-19 has significantly affected monthly Tfl bike travel&quot;,
+       subtitle = &quot;Monthly difference from 2015-2019 monthly average from the start of 2015 to the end of August 2020&quot;,
+       caption = &quot;Source: Tfl, London Data Store&quot;,
+       x= &quot;&quot;, y = &quot;Bike rentals&quot;)+
+  theme(legend.position =&quot;none&quot;,title = element_text(size=12),axis.title = element_text(size=12),axis.text = element_text(size = 10), strip.text = element_text(size=10), plot.margin = margin(0.5,0.5,0.5,0.5, &quot;cm&quot;))+
+  facet_wrap(~year)
+plot_monthly_average_bike</code></pre>
+<p><img src="/blogs/blog2_files/figure-html/unnamed-chunk-4-1.png" width="1440" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>library(grid)
+
+
+#We first start by calculating the historic weekly average between 2015 and 2019
+historic_weeklyaverage &lt;- bike %&gt;%
+  filter(year %in% c(2015,2016,2017,2018,2019))%&gt;%
+  group_by(week)%&gt;%
+  dplyr::summarise(weekly_historic_average=mean(bikes_hired, na.rm = TRUE))
+historic_weeklyaverage</code></pre>
+<pre><code>## # A tibble: 53 x 2
+##     week weekly_historic_average
+##    &lt;dbl&gt;                   &lt;dbl&gt;
+##  1     1                  16360.
+##  2     2                  21402.
+##  3     3                  21540.
+##  4     4                  21407.
+##  5     5                  20795.
+##  6     6                  20058.
+##  7     7                  22761.
+##  8     8                  22602.
+##  9     9                  20176.
+## 10    10                  23561.
+## # ... with 43 more rows</code></pre>
+<pre class="r"><code>#Second, we calculate the weekly average for each year since 2015
+weekly_bike &lt;- bike %&gt;%
+  filter(year %in% c(2015,2016,2017,2018,2019,2020))%&gt;%
+  group_by(year,week)%&gt;%
+  dplyr::summarise(weekly_average = mean(bikes_hired, na.rm=TRUE))
+weekly_bike</code></pre>
+<pre><code>## # A tibble: 298 x 3
+## # Groups:   year [6]
+##     year  week weekly_average
+##    &lt;dbl&gt; &lt;dbl&gt;          &lt;dbl&gt;
+##  1  2015     1         10038.
+##  2  2015     2         18786.
+##  3  2015     3         20131.
+##  4  2015     4         21158.
+##  5  2015     5         19201.
+##  6  2015     6         19386.
+##  7  2015     7         20787 
+##  8  2015     8         18711.
+##  9  2015     9         20213.
+## 10  2015    10         24196.
+## # ... with 288 more rows</code></pre>
+<pre class="r"><code>#Here we merge the historic average and the weekly average for each year to directly compare both in a data set
+weekly_average_bike &lt;- merge(weekly_bike,historic_weeklyaverage, na.rm=TRUE)
+
+#We then proceed by creating one variable called &quot;weekly_diff_percent&quot; which gives the percentage difference between the historic average and the respective weekly average
+weekly_difference &lt;- weekly_average_bike %&gt;%
+  group_by(year,week)%&gt;%
+  dplyr::summarise(weekly_diff_percent = ((weekly_average-weekly_historic_average)/weekly_historic_average))
+
+#We then have a data set with the year, week, and weekly percentage difference from the 2015-2019 weekly average
+weekly_difference</code></pre>
+<pre><code>## # A tibble: 298 x 3
+## # Groups:   year [6]
+##     year  week weekly_diff_percent
+##    &lt;dbl&gt; &lt;dbl&gt;               &lt;dbl&gt;
+##  1  2015     1            -0.386  
+##  2  2015     2            -0.122  
+##  3  2015     3            -0.0654 
+##  4  2015     4            -0.0117 
+##  5  2015     5            -0.0767 
+##  6  2015     6            -0.0335 
+##  7  2015     7            -0.0867 
+##  8  2015     8            -0.172  
+##  9  2015     9             0.00181
+## 10  2015    10             0.0269 
+## # ... with 288 more rows</code></pre>
+<pre class="r"><code>#We define weekly_diff_percent as Y for logical statements
+diff_percent &lt;- weekly_difference$weekly_diff_percent
+
+#Here we visualize the planned comparison
+plot_weekly_difference &lt;- weekly_difference %&gt;%
+  ggplot(aes(x=week,y=weekly_diff_percent,group=1))+
+  
+#Adding the grey background for quarter 2 and quarter 4 
+  geom_rect(mapping=aes(xmin = 13, xmax = 26, ymin = -Inf, ymax = Inf),fill=&quot;#EDEDED&quot;,alpha=0.09)+
+  geom_rect(mapping=aes(xmin = 39, xmax = 53, ymin = -Inf, ymax = Inf),fill=&quot;#EDEDED&quot;,alpha=0.09)+
+#plotting the dataset  
+  geom_line()+
+  geom_ribbon(aes(ymin = pmin(weekly_diff_percent,0), 
+                  ymax = 0), 
+                  fill = alpha(&quot;tomato&quot;,0.2)) +
+  geom_ribbon(aes(ymin = 0, 
+                  ymax = pmax(weekly_diff_percent,0)), 
+                  fill = alpha(&quot;green&quot;,0.2))+
+#Here we need to make sure the colors change based on the color of the ribbon
+  geom_rug(sides=&quot;b&quot;,
+           colour=ifelse(diff_percent&gt;0,&quot;green&quot;,&quot;red&quot;))+
+  theme_minimal()+
+  scale_y_continuous(labels = function(x) paste0(x*100, &quot;%&quot;))+
+  scale_x_continuous(breaks=c(13,26,39,53))+
+    labs(title = &quot;Weekly Tfl Bike Travel significantly impacted by COVID Restrictions&quot;,
+       subtitle = &quot;Percentage change from weekly averages calculated between 2015 and 2019&quot;,
+       caption = &quot;Source: Tfl, London Data Store&quot;,
+       x= &quot;week&quot;, y = &quot;&quot;)+
+  theme(legend.position =&quot;none&quot;,title = element_text(size=12),
+        axis.title = element_text(size=12),
+        axis.text = element_text(size = 10), 
+        strip.text = element_text(size=10), plot.margin = margin(0.5,0.5,0.5,0.5, &quot;cm&quot;))+
+  facet_wrap(~year)
+
+plot_weekly_difference</code></pre>
+<p><img src="/blogs/blog2_files/figure-html/unnamed-chunk-6-1.png" width="1440" style="display: block; margin: auto;" />
+&gt;Based on the two graphs above, we can observe that monthly and weekly activity can vary significantly from the average. Hence, given this strong variation, the Median would be a better metric to calculate expected rentals.</p>
