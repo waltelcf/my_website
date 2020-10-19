@@ -92,9 +92,9 @@ disqusShortname = ""
     # Display your showcases here.
     
     [[params.tiles.showcase]]
-      title = "DJIA"
-      subtitle = "Risk retrun"
-      image = "DJ.jpg"
+      title = "IMBD"
+      subtitle = "Differences between directors"
+      image = "Movie.jpg"
       url = "blogs/blog5"
 
     [[params.tiles.showcase]]
