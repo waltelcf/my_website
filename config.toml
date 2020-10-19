@@ -94,12 +94,12 @@ disqusShortname = ""
     [[params.tiles.showcase]]
       title = "DJIA"
       subtitle = "Risk retrun"
-      image = "pic01.jpg"
+      image = "DJ.jpg"
       url = "blogs/blog5"
 
     [[params.tiles.showcase]]
-      title = "Tempus"
-      subtitle = "Feugiat Amet Tempus"
+      title = "Yield Curve Inversion"
+      subtitle = "plot the yield curves since 1999 to see when the yield curves flatten"
       image = "pic02.jpg"
       url = "blogs/tempus"
 
