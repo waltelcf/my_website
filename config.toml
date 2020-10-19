@@ -110,10 +110,10 @@ disqusShortname = ""
       url = "blogs/magna"
 
     [[params.tiles.showcase]]
-      title = "Ipsum"
-      subtitle = "Nisl Sed Aliquam"
-      image = "pic04.jpg"
-      url = "blogs/ipsum"
+      title = "Climate"
+      subtitle = "Climate change is real"
+      image = "Climate.jpg"
+      url = "blogs/blog1"
 
     [[params.tiles.showcase]]
       title = "Consequat"
@@ -138,12 +138,11 @@ disqusShortname = ""
   # Section Type Two
   [params.two]
     enable = true
-    title = "Massa libero"
-    subtitle = """Nullam et orci eu lorem consequat tincidunt vivamus et sagittis libero. 
-    Mauris aliquet magna magna sed nunc rhoncus pharetra. 
-    Pellentesque condimentum sem. In efficitur ligula tate urna. Maecenas laoreet massa vel lacinia pellentesque lorem ipsum dolor. 
-    Nullam et orci eu lorem consequat tincidunt. Vivamus et sagittis libero.
-    Mauris aliquet magna magna sed nunc rhoncus amet pharetra et feugiat tempus."""
+    title = "Personal Introduction"
+    subtitle = """MFA student at London Business School. 
+    Experienced professionals with a demonstrated history of working in the financial industry. 
+    Skilled in Financial Modelling, Excel, Social Entrepreneurship, Creative Strategy, Bilingual Communications, and Microsoft Office. 
+    """
     buttonText = "Get Started"
     url = "blogs"
 
