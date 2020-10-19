@@ -205,17 +205,17 @@ disqusShortname = ""
       #url= "https://www.instagram.com"
       #label = "Instagram"
     
-    #[[params.footer.social]]
-     # icon = "fa-github"
-      url= "https://www.github.com"
-     #label = "GitHub"
+    [[params.footer.social]]
+      icon = "fa-github"
+      url= "https://github.com/waltelcf/my_website.git"
+      label = "GitHub"
 
     [[params.footer.social]]
       icon = "fa-linkedin"
       url= "https://www.linkedin.com/in/chingfungli/"
       label = "LinkedIn"
 
-    [[params.footer.quicklinks]]
-      text = "Design: "
-      url= "https://www.html5up.net"
-      alt = "HTML5 UP"
+    #[[params.footer.quicklinks]]
+      #text = "Design: "
+      #url= "https://www.html5up.net"
+      #alt = "HTML5 UP"
