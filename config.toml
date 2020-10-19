@@ -1,5 +1,5 @@
 # Site settings
-baseURL = "http://example.org/"
+baseURL = "https://walterwebsite.netlify.app/"
 languageCode = "en-us"
 title = "Portfolio website for Walter Li"
 theme = "forty"
@@ -19,7 +19,7 @@ disqusShortname = ""
   # CSS class.
 
   # Provide your metadata here.
-  name = "Walter"
+  name = "Walter "
   description = "Walter's description"
 
   # Link custom assets relative to /static
