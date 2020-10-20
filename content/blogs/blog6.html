@@ -43,8 +43,8 @@ glimpse(brexit_results)</code></pre>
   geom_histogram(binwidth = 2.5)+
   labs(title = &quot;Histogram: Percent of vote cast in favour of Brexit&quot;,
        x = &quot;Percent of vote cast in favour of Brexit&quot;,
-       y = &quot;Number of Parliament Constituency&quot;) +
-  NULL
+       y = &quot;Number of Parliament Constituency&quot;)+
+  theme_economist()
   
 Plot2</code></pre>
 <p><img src="/blogs/blog6_files/figure-html/brexit_histogram-1.png" width="648" style="display: block; margin: auto;" /></p>
@@ -52,7 +52,8 @@ Plot2</code></pre>
   geom_density()+
   labs(title = &quot;Density Plot: Percent of vote cast in favour of Brexit&quot;,
        x = &quot;Percent of vote cast in favour of Brexit&quot;,
-       y = &quot;Density&quot;) </code></pre>
+       y = &quot;Density&quot;)+
+  theme_economist()</code></pre>
 <p><img src="/blogs/blog6_files/figure-html/brexit_histogram-2.png" width="648" style="display: block; margin: auto;" /></p>
 </div>
 <div id="correlation-between-leave-share-and-native-born-residents" class="section level2">
@@ -70,12 +71,10 @@ Plot2</code></pre>
 <pre class="r"><code>ggplot(brexit_results, aes(x = born_in_uk, y = leave_share)) +
   geom_point(alpha=0.3) +
   geom_smooth(method = &quot;lm&quot;) +
-  theme_bw() +
-  labs(title = &quot;Scatterplot: Relationship between Percent of vote cast in favour of Brexit 
-       and proportion of native born residents&quot;,
+  theme_economist() +
+  labs(title = &quot;Scatterplot: Relationship between leave share and\n proportion of native born residents&quot;,
        x = &quot;Proportion of native born residents&quot;,
-       y = &quot;Percent of vote cast in favour of Brexit&quot;) +
-  NULL</code></pre>
+       y = &quot;Percent of vote cast in favour of Brexit&quot;)</code></pre>
 <p><img src="/blogs/blog6_files/figure-html/brexit_immigration_plot-1.png" width="648" style="display: block; margin: auto;" /></p>
 <blockquote>
 <p>The trend line in the scatterplot above shows a positive relationship between the percent of the vote cast in favour of Brexit and the proportion of native-born residents in a constituency. The result is aligned with the explanation of Brexit mentioned above, as the constituencies with a higher percentage of the vote cast in favour of Brexit has more native-born residents, who are opposed to the EU’s open border policy and increase immigration. Fundamentally, people are afraid that the open border policy and migration would lead to a higher unemployment rate for UK citizens and greater income inequality.</p>
