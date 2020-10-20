@@ -14,7 +14,7 @@ title: Excess rentals in TfL bike sharing
 
 
 <blockquote>
-<p>In this assignment, we are trying to analyze how COVID-19 has impacted inner-city bike travel.</p>
+<p>In this assignment, we will analyze how COVID-19 has impacted inner-city bike travel. Using ggplot for R, we will be able to visualize this change by comparing the monthly rental data with the historical data.</p>
 </blockquote>
 <div id="the-data-importing-the-data-for-the-number-of-bicycle-hires" class="section level2">
 <h2>The Data: importing the data for the number of bicycle hires</h2>
@@ -24,11 +24,11 @@ title: Excess rentals in TfL bike sharing
 # Download TFL data to temporary file
 httr::GET(url, write_disk(bike.temp &lt;- tempfile(fileext = &quot;.xlsx&quot;)))</code></pre>
 <pre><code>## Response [https://airdrive-secure.s3-eu-west-1.amazonaws.com/london/dataset/number-bicycle-hires/2020-09-18T09%3A06%3A54/tfl-daily-cycle-hires.xlsx?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAJJDIMAIVZJDICKHA%2F20201020%2Feu-west-1%2Fs3%2Faws4_request&amp;X-Amz-Date=20201020T185823Z&amp;X-Amz-Expires=300&amp;X-Amz-Signature=a3fb95983f8966501aec30e11763381a9d51bc48d884f0c908d19a2d23abf4bf&amp;X-Amz-SignedHeaders=host]
-##   Date: 2020-10-20 18:58
+##   Date: 2020-10-20 19:02
 ##   Status: 200
 ##   Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
 ##   Size: 165 kB
-## &lt;ON DISK&gt;  C:\Users\walte\AppData\Local\Temp\Rtmpaii4OG\file3c10188f30d5.xlsx</code></pre>
+## &lt;ON DISK&gt;  C:\Users\walte\AppData\Local\Temp\Rtmpcl9OZZ\file5b07da2742.xlsx</code></pre>
 <pre class="r"><code># Use read_excel to read it as dataframe
 bike0 &lt;- read_excel(bike.temp,
                    sheet = &quot;Data&quot;,

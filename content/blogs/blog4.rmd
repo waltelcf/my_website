@@ -48,7 +48,7 @@ library(tidyquant)
 
 ```
 
->The yield curve is often quoted by the street as the indicator for economics recession. In the past, the yield curve has exhibited a strong correlation with the economic cycle and successfully predicted several recessions. This analysis aim to take a deep dive into the yield curve inversion and visualize its relationship with recessions. 
+>The yield curve is often quoted by the street as the indicator of the economic recession. In the past, the yield curve has exhibited a strong correlation with the economic cycle and successfully predicted several recessions. This analysis aims to take a deep dive into the yield curve inversion and visualize its relationship with recessions. 
 
 ## The Data: a list of FRED codes for US rates and US yield curve
 

@@ -141,7 +141,7 @@ disqusShortname = ""
     title = "Welcome to my website"
     subtitle = """I'm excited that you found your way onto my portfolio website. 
     This is the place where I display my data analytics work as part of my current studies at London Business School.
-    Please see my blogs by clicking the bottom below. You will find my selective projects and challenges in my pursuit to use R language explaining real world data. 
+    Please see my blogs by clicking the bottom below. You will find my selective projects and challenges in my pursuit to use R language to explain real-world data. 
     Stay tuned for more updates as I continue to explore the world of data analytics. Feel free to leave a comment below, I would love to hear your feedback!
     """
     buttonText = "My Data Analytics Work"

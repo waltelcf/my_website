@@ -41,7 +41,7 @@ library(readxl)
 library(vroom)
 ```
 
->In this assignment, we are trying to analyze how COVID-19 has impacted inner-city bike travel.
+>In this assignment, we will analyze how COVID-19 has impacted inner-city bike travel. Using ggplot for R, we will be able to visualize this change by comparing the monthly rental data with the historical data. 
 
 ## The Data: importing the data for the number of bicycle hires
 Data Source: london.gov.uk
