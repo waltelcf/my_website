@@ -41,7 +41,7 @@ library(readxl)
 library(vroom)
 ```
 
-In this assignment, we are trying to analysis the potential effect of COVID-19 on the biking sharing.
+>In this assignment, we are trying to analyze how COVID-19 has impacted inner-city bike travel.
 
 ## The Data: importing the data for the number of bicycle hires
 Data Source: london.gov.uk

@@ -99,7 +99,7 @@ disqusShortname = ""
       
     [[params.tiles.showcase]]
       title = "Excess Rentals Bike Sharing"
-      subtitle = "How has COVID-19 affected the monthly travel"
+      subtitle = "How has COVID-19 affected the bike travel"
       image = "Bike.jpg"
       url = "blogs/blog2"
   

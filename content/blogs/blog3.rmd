@@ -44,6 +44,8 @@ library(purrr)
 library(lubridate) #to handle dates
 ```
 
+>In this assignment, we will analyze the risk and return profiles of the DJIA stocks and visualize the relationship using ggplot from R.
+
 ## The Data: importing the data for NYSE
 
 ```{r}

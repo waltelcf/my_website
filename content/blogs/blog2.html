@@ -13,7 +13,9 @@ title: Excess rentals in TfL bike sharing
 
 
 
-<p>In this assignment, we are trying to analysis the potential effect of COVID-19 on the biking sharing.</p>
+<blockquote>
+<p>In this assignment, we are trying to analyze how COVID-19 has impacted inner-city bike travel.</p>
+</blockquote>
 <div id="the-data-importing-the-data-for-the-number-of-bicycle-hires" class="section level2">
 <h2>The Data: importing the data for the number of bicycle hires</h2>
 <p>Data Source: london.gov.uk</p>
@@ -21,12 +23,12 @@ title: Excess rentals in TfL bike sharing
 
 # Download TFL data to temporary file
 httr::GET(url, write_disk(bike.temp &lt;- tempfile(fileext = &quot;.xlsx&quot;)))</code></pre>
-<pre><code>## Response [https://airdrive-secure.s3-eu-west-1.amazonaws.com/london/dataset/number-bicycle-hires/2020-09-18T09%3A06%3A54/tfl-daily-cycle-hires.xlsx?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAJJDIMAIVZJDICKHA%2F20201020%2Feu-west-1%2Fs3%2Faws4_request&amp;X-Amz-Date=20201020T182900Z&amp;X-Amz-Expires=300&amp;X-Amz-Signature=30519e4f0fc3efd88e6c3271ef1e2f8511bc6ee89936d6c73b5e0bd0bb8eb629&amp;X-Amz-SignedHeaders=host]
-##   Date: 2020-10-20 18:29
+<pre><code>## Response [https://airdrive-secure.s3-eu-west-1.amazonaws.com/london/dataset/number-bicycle-hires/2020-09-18T09%3A06%3A54/tfl-daily-cycle-hires.xlsx?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAJJDIMAIVZJDICKHA%2F20201020%2Feu-west-1%2Fs3%2Faws4_request&amp;X-Amz-Date=20201020T185823Z&amp;X-Amz-Expires=300&amp;X-Amz-Signature=a3fb95983f8966501aec30e11763381a9d51bc48d884f0c908d19a2d23abf4bf&amp;X-Amz-SignedHeaders=host]
+##   Date: 2020-10-20 18:58
 ##   Status: 200
 ##   Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
 ##   Size: 165 kB
-## &lt;ON DISK&gt;  C:\Users\walte\AppData\Local\Temp\RtmpiGz464\file8ccc21486517.xlsx</code></pre>
+## &lt;ON DISK&gt;  C:\Users\walte\AppData\Local\Temp\Rtmpaii4OG\file3c10188f30d5.xlsx</code></pre>
 <pre class="r"><code># Use read_excel to read it as dataframe
 bike0 &lt;- read_excel(bike.temp,
                    sheet = &quot;Data&quot;,

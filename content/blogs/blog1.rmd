@@ -41,11 +41,12 @@ library(readxl)
 library(vroom)
 ```
 
-
-# Climate change is real. 
+>Our Earth's climate has changed throughout history. According to NASA, "just in the last 650,000 years, there have been seven cycles of glacial advance and retreat, with the abrupt end of the last ice age about 11,700 years ago marking the beginning of the modern climate era — and human civilization." This assignment will analyze the NASA data to visualize the climate change on Earth for the period of 1980 to 2019. 
 
 ## The Data: importing the data on the change in temperature from 1980 to 2019
+
 Data source: NASA Goddard Institute for Space Studies (GISS) 
+
 ```{r weather_data, cache=TRUE}
 
 weather <- 
@@ -69,6 +70,7 @@ skim(tidyweather)
 ```
 
 ## Increase in Weather Anomalies over time
+
 Now, we analyze the increase in weather anomalies using ggplot. 
 
 ```{r scatter_plot}
@@ -94,6 +96,7 @@ ggplot(tidyweather, aes(x=date, y = delta))+
 
 
 ## Weather Anomalies by Month
+
 Next, we further analyze the anomalies to see the trend for each month. 
 
 ```{r facet_wrap}
