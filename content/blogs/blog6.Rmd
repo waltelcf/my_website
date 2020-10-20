@@ -36,6 +36,8 @@ library(gapminder)  # gapminder dataset
 library(here)
 ```
 
+>One common explanation for the Brexit outcome was fear of immigration and opposition to the EU's more open border policy. We can check the relationship (or correlation) between the proportion of native born residents in a constituency and its `leave_share`. To do this, we will analyze the brexit voting result and get the correlation between the two variables.
+
 ## The Data: Brexit voting result
 
 
@@ -68,8 +70,6 @@ ggplot(brexit_results, aes(x = leave_share)) +
 
 
 ```
-
->One common explanation for the Brexit outcome was fear of immigration and opposition to the EU's more open border policy. We can check the relationship (or correlation) between the proportion of native born residents in a constituency and its `leave_share`. To do this, let us get the correlation between the two variables.
 
 ## Correlation between leave share and native born residents 
 

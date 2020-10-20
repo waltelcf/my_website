@@ -13,6 +13,9 @@ title: Brexit Voting
 
 
 
+<blockquote>
+<p>One common explanation for the Brexit outcome was fear of immigration and opposition to the EU’s more open border policy. We can check the relationship (or correlation) between the proportion of native born residents in a constituency and its <code>leave_share</code>. To do this, we will analyze the brexit voting result and get the correlation between the two variables.</p>
+</blockquote>
 <div id="the-data-brexit-voting-result" class="section level2">
 <h2>The Data: Brexit voting result</h2>
 <pre class="r"><code>brexit_results &lt;- read_csv(here::here(&quot;data&quot;, &quot;brexit_results.csv&quot;))
@@ -51,9 +54,6 @@ Plot2</code></pre>
        x = &quot;Percent of vote cast in favour of Brexit&quot;,
        y = &quot;Density&quot;) </code></pre>
 <p><img src="/blogs/blog6_files/figure-html/brexit_histogram-2.png" width="648" style="display: block; margin: auto;" /></p>
-<blockquote>
-<p>One common explanation for the Brexit outcome was fear of immigration and opposition to the EU’s more open border policy. We can check the relationship (or correlation) between the proportion of native born residents in a constituency and its <code>leave_share</code>. To do this, let us get the correlation between the two variables.</p>
-</blockquote>
 </div>
 <div id="correlation-between-leave-share-and-native-born-residents" class="section level2">
 <h2>Correlation between leave share and native born residents</h2>
