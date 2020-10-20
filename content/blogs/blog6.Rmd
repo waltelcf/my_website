@@ -3,12 +3,100 @@ categories:
 - ""
 - ""
 date: "2017-10-31T22:26:13-05:00"
-description: Nullam et orci eu lorem consequat tincidunt vivamus et sagittis magna sed nunc rhoncus condimentum sem. In efficitur ligula tate urna. Maecenas massa sed magna lacinia magna pellentesque lorem ipsum dolor. Nullam et orci eu lorem consequat tincidunt. Vivamus et sagittis tempus.
+description: "Analyze the relationship between leave share and native born residents"
 draft: false
-image: pic08.jpg
+image: BREXIT.jpg
 keywords: ""
 slug: blog6
-title: Tempus
+title: Brexit Voting
 ---
 
-hello
+
+```{r, setup, echo=FALSE}
+
+knitr::opts_chunk$set(
+  message = FALSE, 
+  warning = FALSE, 
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+options(digits = 3)
+
+# default figure size
+knitr::opts_chunk$set(
+  fig.width=6.75, 
+  fig.height=6.75,
+  fig.align = "center"
+)
+```
+
+
+```{r load-libraries, warning=FALSE, message=FALSE, echo=FALSE}
+library(tidyverse)  # Load ggplot2, dplyr, and all the other tidyverse packages
+library(gapminder)  # gapminder dataset
+library(here)
+```
+
+## The Data: Brexit voting result
+
+
+```{r load_brexit_data, warning=FALSE, message=FALSE}
+brexit_results <- read_csv(here::here("data", "brexit_results.csv"))
+
+
+glimpse(brexit_results)
+```
+
+## Histogram and Density Plot of the leave share
+
+To get a sense of the spread of the data, plot a histogram and a density plot of the leave share in all constituencies.
+
+```{r brexit_histogram, warning=FALSE, message=FALSE}
+Plot2 <- ggplot(brexit_results, aes(x = leave_share)) +
+  geom_histogram(binwidth = 2.5)+
+  labs(title = "Histogram: Percent of vote cast in favour of Brexit",
+       x = "Percent of vote cast in favour of Brexit",
+       y = "Number of Parliament Constituency") +
+  NULL
+  
+Plot2
+
+ggplot(brexit_results, aes(x = leave_share)) +
+  geom_density()+
+  labs(title = "Density Plot: Percent of vote cast in favour of Brexit",
+       x = "Percent of vote cast in favour of Brexit",
+       y = "Density") 
+
+
+```
+
+>One common explanation for the Brexit outcome was fear of immigration and opposition to the EU's more open border policy. We can check the relationship (or correlation) between the proportion of native born residents in a constituency and its `leave_share`. To do this, let us get the correlation between the two variables.
+
+## Correlation between leave share and native born residents 
+
+```{r brexit_immigration_correlation}
+brexit_results %>% 
+  select(leave_share, born_in_uk) %>% 
+  cor()
+```
+
+>The correlation is almost 0.5, which shows that the two variables are positively correlated. 
+
+We can also create a scatterplot between these two variables.
+
+```{r brexit_immigration_plot}
+ggplot(brexit_results, aes(x = born_in_uk, y = leave_share)) +
+  geom_point(alpha=0.3) +
+  geom_smooth(method = "lm") +
+  theme_bw() +
+  labs(title = "Scatterplot: Relationship between Percent of vote cast in favour of Brexit 
+       and proportion of native born residents",
+       x = "Proportion of native born residents",
+       y = "Percent of vote cast in favour of Brexit") +
+  NULL
+```
+
+>The trend line in the scatterplot above shows a positive relationship between the percent of the vote cast in favour of Brexit and the proportion of native-born residents in a constituency. The result is aligned with the explanation of Brexit mentioned above, as the constituencies with a higher percentage of the vote cast in favour of Brexit has more native-born residents, who are opposed to the EU's open border policy and increase immigration. Fundamentally, people are afraid that the open border policy and migration would lead to a higher unemployment rate for UK citizens and greater income inequality.
+
+>On the other hand, one may argue that the trend line is not representative of the scatterplot, and there might be factors other than the proportion of native-born residents that contribute to Brexit. Most of the data points in the scatterplot are centered right side of the X-axis, since most of the constituencies have more than 90% of native-born residents. The percent of vote cast from these constituencies also vary from 40% - 70% and thus making the trendline less representative. Other demographic factors that might contribute to Brexit include age, occupations, educational attainment, income level, etc.
+
+*Last updated:* `r format(Sys.time(), '%d %B, %Y')`

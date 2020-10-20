@@ -121,12 +121,10 @@ disqusShortname = ""
       image = "Movie.jpg"
       url = "blogs/blog5"
 
-    
-
     [[params.tiles.showcase]]
-      title = "Etiam"
-      subtitle = "Feugiat Amet Tempus"
-      image = "pic06.jpg"
+      title = "Brexit Voting"
+      subtitle = "Was the Brexit outcome a fear of immigration from the native born residents?"
+      image = "BREXIT.jpg"
       url = "blogs/blog6"
     # You can make more showcases by copy and pasting the code above
 

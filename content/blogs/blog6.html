@@ -3,14 +3,85 @@ categories:
 - ""
 - ""
 date: "2017-10-31T22:26:13-05:00"
-description: Nullam et orci eu lorem consequat tincidunt vivamus et sagittis magna sed nunc rhoncus condimentum sem. In efficitur ligula tate urna. Maecenas massa sed magna lacinia magna pellentesque lorem ipsum dolor. Nullam et orci eu lorem consequat tincidunt. Vivamus et sagittis tempus.
+description: "Analyze the relationship between leave share and native born residents"
 draft: false
-image: pic08.jpg
+image: BREXIT.jpg
 keywords: ""
 slug: blog6
-title: Tempus
+title: Brexit Voting
 ---
 
 
 
-<p>hello</p>
+<div id="the-data-brexit-voting-result" class="section level2">
+<h2>The Data: Brexit voting result</h2>
+<pre class="r"><code>brexit_results &lt;- read_csv(here::here(&quot;data&quot;, &quot;brexit_results.csv&quot;))
+
+
+glimpse(brexit_results)</code></pre>
+<pre><code>## Rows: 632
+## Columns: 11
+## $ Seat        &lt;chr&gt; &quot;Aldershot&quot;, &quot;Aldridge-Brownhills&quot;, &quot;Altrincham and Sal...
+## $ con_2015    &lt;dbl&gt; 50.6, 52.0, 53.0, 44.0, 60.8, 22.4, 52.5, 22.1, 50.7, 5...
+## $ lab_2015    &lt;dbl&gt; 18.3, 22.4, 26.7, 34.8, 11.2, 41.0, 18.4, 49.8, 15.1, 2...
+## $ ld_2015     &lt;dbl&gt; 8.82, 3.37, 8.38, 2.98, 7.19, 14.83, 5.98, 2.42, 10.62,...
+## $ ukip_2015   &lt;dbl&gt; 17.87, 19.62, 8.01, 15.89, 14.44, 21.41, 18.82, 21.76, ...
+## $ leave_share &lt;dbl&gt; 57.9, 67.8, 38.6, 65.3, 49.7, 70.5, 59.9, 61.8, 51.8, 5...
+## $ born_in_uk  &lt;dbl&gt; 83.1, 96.1, 90.5, 97.3, 93.3, 97.0, 90.5, 90.7, 87.0, 8...
+## $ male        &lt;dbl&gt; 49.9, 48.9, 48.9, 49.2, 48.0, 49.2, 48.5, 49.2, 49.5, 4...
+## $ unemployed  &lt;dbl&gt; 3.64, 4.55, 3.04, 4.26, 2.47, 4.74, 3.69, 5.11, 3.39, 2...
+## $ degree      &lt;dbl&gt; 13.87, 9.97, 28.60, 9.34, 18.78, 6.09, 13.12, 7.90, 17....
+## $ age_18to24  &lt;dbl&gt; 9.41, 7.33, 6.44, 7.75, 5.73, 8.21, 7.82, 8.94, 7.56, 7...</code></pre>
+</div>
+<div id="histogram-and-density-plot-of-the-leave-share" class="section level2">
+<h2>Histogram and Density Plot of the leave share</h2>
+<p>To get a sense of the spread of the data, plot a histogram and a density plot of the leave share in all constituencies.</p>
+<pre class="r"><code>Plot2 &lt;- ggplot(brexit_results, aes(x = leave_share)) +
+  geom_histogram(binwidth = 2.5)+
+  labs(title = &quot;Histogram: Percent of vote cast in favour of Brexit&quot;,
+       x = &quot;Percent of vote cast in favour of Brexit&quot;,
+       y = &quot;Number of Parliament Constituency&quot;) +
+  NULL
+  
+Plot2</code></pre>
+<p><img src="/blogs/blog6_files/figure-html/brexit_histogram-1.png" width="648" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(brexit_results, aes(x = leave_share)) +
+  geom_density()+
+  labs(title = &quot;Density Plot: Percent of vote cast in favour of Brexit&quot;,
+       x = &quot;Percent of vote cast in favour of Brexit&quot;,
+       y = &quot;Density&quot;) </code></pre>
+<p><img src="/blogs/blog6_files/figure-html/brexit_histogram-2.png" width="648" style="display: block; margin: auto;" /></p>
+<blockquote>
+<p>One common explanation for the Brexit outcome was fear of immigration and opposition to the EU’s more open border policy. We can check the relationship (or correlation) between the proportion of native born residents in a constituency and its <code>leave_share</code>. To do this, let us get the correlation between the two variables.</p>
+</blockquote>
+</div>
+<div id="correlation-between-leave-share-and-native-born-residents" class="section level2">
+<h2>Correlation between leave share and native born residents</h2>
+<pre class="r"><code>brexit_results %&gt;% 
+  select(leave_share, born_in_uk) %&gt;% 
+  cor()</code></pre>
+<pre><code>##             leave_share born_in_uk
+## leave_share       1.000      0.493
+## born_in_uk        0.493      1.000</code></pre>
+<blockquote>
+<p>The correlation is almost 0.5, which shows that the two variables are positively correlated.</p>
+</blockquote>
+<p>We can also create a scatterplot between these two variables.</p>
+<pre class="r"><code>ggplot(brexit_results, aes(x = born_in_uk, y = leave_share)) +
+  geom_point(alpha=0.3) +
+  geom_smooth(method = &quot;lm&quot;) +
+  theme_bw() +
+  labs(title = &quot;Scatterplot: Relationship between Percent of vote cast in favour of Brexit 
+       and proportion of native born residents&quot;,
+       x = &quot;Proportion of native born residents&quot;,
+       y = &quot;Percent of vote cast in favour of Brexit&quot;) +
+  NULL</code></pre>
+<p><img src="/blogs/blog6_files/figure-html/brexit_immigration_plot-1.png" width="648" style="display: block; margin: auto;" /></p>
+<blockquote>
+<p>The trend line in the scatterplot above shows a positive relationship between the percent of the vote cast in favour of Brexit and the proportion of native-born residents in a constituency. The result is aligned with the explanation of Brexit mentioned above, as the constituencies with a higher percentage of the vote cast in favour of Brexit has more native-born residents, who are opposed to the EU’s open border policy and increase immigration. Fundamentally, people are afraid that the open border policy and migration would lead to a higher unemployment rate for UK citizens and greater income inequality.</p>
+</blockquote>
+<blockquote>
+<p>On the other hand, one may argue that the trend line is not representative of the scatterplot, and there might be factors other than the proportion of native-born residents that contribute to Brexit. Most of the data points in the scatterplot are centered right side of the X-axis, since most of the constituencies have more than 90% of native-born residents. The percent of vote cast from these constituencies also vary from 40% - 70% and thus making the trendline less representative. Other demographic factors that might contribute to Brexit include age, occupations, educational attainment, income level, etc.</p>
+</blockquote>
+<p><em>Last updated:</em> 20 October, 2020</p>
+</div>

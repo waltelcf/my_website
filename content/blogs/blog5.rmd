@@ -293,3 +293,4 @@ comp_rating %>%
   
 ```
 
+*Last updated:* `r format(Sys.time(), '%d %B, %Y')`
