@@ -21,12 +21,12 @@ title: Excess rentals in TfL bike sharing
 
 # Download TFL data to temporary file
 httr::GET(url, write_disk(bike.temp &lt;- tempfile(fileext = &quot;.xlsx&quot;)))</code></pre>
-<pre><code>## Response [https://airdrive-secure.s3-eu-west-1.amazonaws.com/london/dataset/number-bicycle-hires/2020-09-18T09%3A06%3A54/tfl-daily-cycle-hires.xlsx?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAJJDIMAIVZJDICKHA%2F20201020%2Feu-west-1%2Fs3%2Faws4_request&amp;X-Amz-Date=20201020T051503Z&amp;X-Amz-Expires=300&amp;X-Amz-Signature=c93365edbebe914860ab860585da0f9909f0b26d91e3786b142c2f6623363659&amp;X-Amz-SignedHeaders=host]
-##   Date: 2020-10-20 05:15
+<pre><code>## Response [https://airdrive-secure.s3-eu-west-1.amazonaws.com/london/dataset/number-bicycle-hires/2020-09-18T09%3A06%3A54/tfl-daily-cycle-hires.xlsx?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAJJDIMAIVZJDICKHA%2F20201020%2Feu-west-1%2Fs3%2Faws4_request&amp;X-Amz-Date=20201020T053031Z&amp;X-Amz-Expires=300&amp;X-Amz-Signature=62931818397404bfa35120e9c2c22146db09888bda74571fb052a00db8cdefba&amp;X-Amz-SignedHeaders=host]
+##   Date: 2020-10-20 05:30
 ##   Status: 200
 ##   Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
 ##   Size: 165 kB
-## &lt;ON DISK&gt;  C:\Users\walte\AppData\Local\Temp\RtmpU9XsgF\file6b2848fb18f.xlsx</code></pre>
+## &lt;ON DISK&gt;  C:\Users\walte\AppData\Local\Temp\RtmpycTpyW\file8b90287f3166.xlsx</code></pre>
 <pre class="r"><code># Use read_excel to read it as dataframe
 bike0 &lt;- read_excel(bike.temp,
                    sheet = &quot;Data&quot;,
@@ -39,16 +39,11 @@ bike &lt;- bike0 %&gt;%
   mutate (year = year(day),
           month = lubridate::month(day, label = TRUE),
           week = isoweek(day))</code></pre>
-<p>We can easily create a facet grid that plots bikes hired by month and year.
-image: tfl_distributions_monthly.png</p>
-<p><img src="C:/Users/walte/Documents/my_website/images/tfl_distributions_monthly.png" width="100%" style="display: block; margin: auto;" /></p>
-<p>Look at May and Jun and compare 2020 with the previous years.</p>
-<p><img src="C:/Users/walte/Documents/my_website/images/tfl_monthly.png" width="100%" style="display: block; margin: auto;" /></p>
-<p>The second one looks at percentage changes from the expected level of weekly rentals. The two grey shaded rectangles correspond to the second (weeks 14-26) and fourth (weeks 40-52) quarters.</p>
-<p><img src="C:/Users/walte/Documents/my_website/images/tfl_weekly.png" width="100%" style="display: block; margin: auto;" /></p>
-<p>For both of these graphs, we calculated the expected number of rentals per week or month between 2015-2019.</p>
-<pre class="r"><code>#We first start by calculating the historic monthly average between 2015 and 2019
-historic_average &lt;- bike %&gt;%
+</div>
+<div id="look-at-may-and-jun-and-compare-2020-with-the-previous-years." class="section level2">
+<h2>Look at May and Jun and compare 2020 with the previous years.</h2>
+<p>First, we calculated the expected number of rentals per week or month between 2015-2019.</p>
+<pre class="r"><code>historic_average &lt;- bike %&gt;%
   filter(year %in% c(2015,2016,2017,2018,2019))%&gt;%
   group_by(month)%&gt;%
   summarise(monthly_historic_average=mean(bikes_hired, na.rm = TRUE))
@@ -68,8 +63,8 @@ historic_average</code></pre>
 ## 10 Oct                     29900.
 ## 11 Nov                     24365.
 ## 12 Dec                     19218.</code></pre>
-<pre class="r"><code>#Second, we calculate the monthly average for each year since 2015
-monthly_bike &lt;- bike %&gt;%
+<p>Second, we calculate the monthly average for each year since 2015.</p>
+<pre class="r"><code>monthly_bike &lt;- bike %&gt;%
   filter(year %in% c(2015,2016,2017,2018,2019,2020))%&gt;%
   group_by(year,month)%&gt;%
   summarise(monthly_average = mean(bikes_hired, na.rm=TRUE))
@@ -90,8 +85,8 @@ monthly_bike</code></pre>
 ##  9  2015 Sep            30114.
 ## 10  2015 Oct            28560.
 ## # ... with 58 more rows</code></pre>
-<pre class="r"><code>#Here we merge the historic average and the monthly average for each year to directly compare both in a data set
-monthly_average_bike &lt;- merge(monthly_bike,historic_average)
+<p>Here we merge the historic average and the monthly average for each year to directly compare both in a data set.</p>
+<pre class="r"><code>monthly_average_bike &lt;- merge(monthly_bike,historic_average)
 
 monthly_average_bike</code></pre>
 <pre><code>##    month year monthly_average monthly_historic_average
@@ -163,8 +158,8 @@ monthly_average_bike</code></pre>
 ## 66   Sep 2017           31158                    32433
 ## 67   Sep 2018           33607                    32433
 ## 68   Sep 2019           32186                    32433</code></pre>
-<pre class="r"><code>#Here we visualize the planned comparison
-plot_monthly_average_bike &lt;- monthly_average_bike %&gt;%
+<p>Now, we can visualize the planned comparison</p>
+<pre class="r"><code>plot_monthly_average_bike &lt;- monthly_average_bike %&gt;%
   ggplot(aes(x=month,group=1))+
   geom_line(aes(y=monthly_average), size=0.6)+
   geom_line(aes(y=monthly_historic_average),color=&quot;blue&quot;,size=0.6)+
@@ -183,12 +178,15 @@ plot_monthly_average_bike &lt;- monthly_average_bike %&gt;%
   theme(legend.position =&quot;none&quot;,title = element_text(size=12),axis.title = element_text(size=12),axis.text = element_text(size = 10), strip.text = element_text(size=10), plot.margin = margin(0.5,0.5,0.5,0.5, &quot;cm&quot;))+
   facet_wrap(~year)
 plot_monthly_average_bike</code></pre>
-<p><img src="/blogs/blog2_files/figure-html/unnamed-chunk-4-1.png" width="1440" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>library(grid)
-
-
-#We first start by calculating the historic weekly average between 2015 and 2019
-historic_weeklyaverage &lt;- bike %&gt;%
+<p><img src="/blogs/blog2_files/figure-html/unnamed-chunk-6-1.png" width="1440" style="display: block; margin: auto;" /></p>
+<blockquote>
+<p>From the graph, we can see that the COVID-19 has significantly affected the monthly bike travel, as the number from Feb to May 2020 were significantly lower than the historical level.</p>
+</blockquote>
+<p>##Percentage changes from the expected level of weekly rentals.
+The second graph looks at percentage changes from the expected level of weekly rentals. The two grey shaded rectangles correspond to the second (weeks 14-26) and fourth (weeks 40-52) quarters.</p>
+<pre class="r"><code>library(grid)</code></pre>
+<p>We first start by calculating the historic weekly average between 2015 and 2019</p>
+<pre class="r"><code>historic_weeklyaverage &lt;- bike %&gt;%
   filter(year %in% c(2015,2016,2017,2018,2019))%&gt;%
   group_by(week)%&gt;%
   dplyr::summarise(weekly_historic_average=mean(bikes_hired, na.rm = TRUE))
@@ -207,8 +205,8 @@ historic_weeklyaverage</code></pre>
 ##  9     9                  20176.
 ## 10    10                  23561.
 ## # ... with 43 more rows</code></pre>
-<pre class="r"><code>#Second, we calculate the weekly average for each year since 2015
-weekly_bike &lt;- bike %&gt;%
+<p>Second, we calculate the weekly average for each year since 2015</p>
+<pre class="r"><code>weekly_bike &lt;- bike %&gt;%
   filter(year %in% c(2015,2016,2017,2018,2019,2020))%&gt;%
   group_by(year,week)%&gt;%
   dplyr::summarise(weekly_average = mean(bikes_hired, na.rm=TRUE))
@@ -253,10 +251,10 @@ weekly_difference</code></pre>
 ##  9  2015     9             0.00181
 ## 10  2015    10             0.0269 
 ## # ... with 288 more rows</code></pre>
+<p>Here we visualize the planned comparison</p>
 <pre class="r"><code>#We define weekly_diff_percent as Y for logical statements
 diff_percent &lt;- weekly_difference$weekly_diff_percent
 
-#Here we visualize the planned comparison
 plot_weekly_difference &lt;- weekly_difference %&gt;%
   ggplot(aes(x=week,y=weekly_diff_percent,group=1))+
   
@@ -288,7 +286,7 @@ plot_weekly_difference &lt;- weekly_difference %&gt;%
   facet_wrap(~year)
 
 plot_weekly_difference</code></pre>
-<p><img src="/blogs/blog2_files/figure-html/unnamed-chunk-6-1.png" width="1440" style="display: block; margin: auto;" />
+<p><img src="/blogs/blog2_files/figure-html/unnamed-chunk-10-1.png" width="1440" style="display: block; margin: auto;" />
 &gt;Based on the two graphs above, we can observe that monthly and weekly activity can vary significantly from the average. Hence, given this strong variation, the Median would be a better metric to calculate expected rentals.</p>
 <p><em>Last updated:</em> 20 October, 2020</p>
 </div>

@@ -69,53 +69,36 @@ bike <- bike0 %>%
           week = isoweek(day))
 ```
 
+## Look at May and Jun and compare 2020 with the previous years.
 
-We can easily create a facet grid that plots bikes hired by month and year.
-image: tfl_distributions_monthly.png
-
-```{r tfl_month_year_grid, echo=FALSE, out.width="100%"}
-knitr::include_graphics(here::here("images", "tfl_distributions_monthly.png"), error = FALSE)
-```
-
-Look at May and Jun and compare 2020 with the previous years.
-
-```{r tfl_absolute_monthly_change, echo=FALSE, out.width="100%"}
-knitr::include_graphics(here::here("images", "tfl_monthly.png"), error = FALSE)
-```
-
-The second one looks at percentage changes from the expected level of weekly rentals. The two grey shaded rectangles correspond to the second (weeks 14-26) and fourth (weeks 40-52) quarters.
-
-```{r tfl_percent_change, echo=FALSE, out.width="100%"}
-knitr::include_graphics(here::here("images", "tfl_weekly.png"), error = FALSE)
-```
-
-For both of these graphs, we calculated the expected number of rentals per week or month between 2015-2019.
-
-
+First, we calculated the expected number of rentals per week or month between 2015-2019.
 ```{r}
-#We first start by calculating the historic monthly average between 2015 and 2019
 historic_average <- bike %>%
   filter(year %in% c(2015,2016,2017,2018,2019))%>%
   group_by(month)%>%
   summarise(monthly_historic_average=mean(bikes_hired, na.rm = TRUE))
 historic_average
+```
 
-#Second, we calculate the monthly average for each year since 2015
+Second, we calculate the monthly average for each year since 2015.
+```{r}
 monthly_bike <- bike %>%
   filter(year %in% c(2015,2016,2017,2018,2019,2020))%>%
   group_by(year,month)%>%
   summarise(monthly_average = mean(bikes_hired, na.rm=TRUE))
 
 monthly_bike
+```
 
-#Here we merge the historic average and the monthly average for each year to directly compare both in a data set
+Here we merge the historic average and the monthly average for each year to directly compare both in a data set.
+```{r}
 monthly_average_bike <- merge(monthly_bike,historic_average)
 
 monthly_average_bike
 ```
 
+Now, we can visualize the planned comparison
 ```{r,fig.height=10,fig.width=15}
-#Here we visualize the planned comparison
 plot_monthly_average_bike <- monthly_average_bike %>%
   ggplot(aes(x=month,group=1))+
   geom_line(aes(y=monthly_average), size=0.6)+
@@ -137,18 +120,25 @@ plot_monthly_average_bike <- monthly_average_bike %>%
 plot_monthly_average_bike
 ```
 
+>From the graph, we can see that the COVID-19 has significantly affected the monthly bike travel, as the number from Feb to May 2020 were significantly lower than the historical level. 
+
+##Percentage changes from the expected level of weekly rentals.
+The second graph looks at percentage changes from the expected level of weekly rentals. The two grey shaded rectangles correspond to the second (weeks 14-26) and fourth (weeks 40-52) quarters.
 ```{r}
 library(grid)
+```
 
-
-#We first start by calculating the historic weekly average between 2015 and 2019
+We first start by calculating the historic weekly average between 2015 and 2019
+```{r}
 historic_weeklyaverage <- bike %>%
   filter(year %in% c(2015,2016,2017,2018,2019))%>%
   group_by(week)%>%
   dplyr::summarise(weekly_historic_average=mean(bikes_hired, na.rm = TRUE))
 historic_weeklyaverage
+```
 
-#Second, we calculate the weekly average for each year since 2015
+Second, we calculate the weekly average for each year since 2015
+```{r}
 weekly_bike <- bike %>%
   filter(year %in% c(2015,2016,2017,2018,2019,2020))%>%
   group_by(year,week)%>%
@@ -167,11 +157,11 @@ weekly_difference <- weekly_average_bike %>%
 weekly_difference
 ```
 
+Here we visualize the planned comparison
 ```{r,fig.height=10,fig.width=15}
 #We define weekly_diff_percent as Y for logical statements
 diff_percent <- weekly_difference$weekly_diff_percent
 
-#Here we visualize the planned comparison
 plot_weekly_difference <- weekly_difference %>%
   ggplot(aes(x=week,y=weekly_diff_percent,group=1))+
   
