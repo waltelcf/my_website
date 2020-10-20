@@ -3,12 +3,12 @@ categories:
 - ""
 - ""
 date: "2017-10-31T22:42:51-05:00"
-description: "An ananlysis of IMBD rating of different directors"
+description: "An comprehensive ananlysis of IMBD dataset"
 draft: false
 image: Movie.jpg
 keywords: ""
 slug: blog5
-title: IMBD Rating
+title: IMBD Dataset
 ---
 
 ```{r, setup, echo=FALSE}
@@ -48,14 +48,9 @@ library(tidyquant)
 
 ```
 
-We will explore whether the mean IMDB rating for Steven Spielberg and Tim Burton are the same or not. 
+>In this assignment, we will focus on two objectives. The first objective is to examine the IMBD dataset and explore the relationship between gross revenue and other variables such as genre, Facebook likes, Budgets, and IMBD ratings. The second objective is to utilize null hypothesis in a data example, exploring whether the mean IMDB rating for Steven Spielberg and Tim Burton are the same or not.
 
-> Before anything, write down the null and alternative hypotheses, as well as the resulting test statistic and the associated t-stat or p-value. 
->
-H0: Mean IMDB rating for Steven Spielberg and Tim Burton are NOT significantly different.
-H1: Mean IMDB rating for Steven Spielberg and Tim Burton are significantly different.
-
-*Here we examine the data set*
+## The data: IMBD movies data
 
 ```{r load-movies-data}
 movies <- read_csv(here::here("data", "movies.csv"))
@@ -63,11 +58,133 @@ glimpse(movies)
 
 #We skim for missing values
 skim(movies)
+distinct(movies)
+
 ```
 
+>We are now looking at a subset of the IMDB Movie Dataset. The variables set is made up of both numeric and character variable types. There are no missing values, shown by both n_missing = 0 and complete_rate = 1 for all variables. However, not all entries are distinct, which is easily explainable for genre and director: Films are subsets of Genres and Directors do not always shoot only one film. The title variable also has not solely distinct variables, which can be explained by same names used for different films.
 
-## Ratings on Steven Spielberg's Films
+## Analysis of IMDB dataset
 
+### Table with the count of movies by genre, ranked in descending order:
+
+```{r}
+movies %>%
+  group_by(genre) %>%
+  summarise(count=n())%>%
+  arrange(desc(count))
+```
+
+### Table with the average gross earning and budget by genre:
+
+```{r}
+movies %>%
+  select(genre,gross,budget)%>%
+  group_by(genre)%>%
+  summarise(avg_gross=mean(gross),avg_budget=mean(budget))%>%
+  mutate(return_on_budget=avg_gross/avg_budget)%>%
+  arrange(desc(return_on_budget))
+```
+
+### Table that shows the top 15 directors who have created the highest gross revenue in the box office:
+
+```{r}
+movies %>%
+  group_by(director)%>%
+  summarise(total=sum(gross),mean=mean(gross),median=median(gross),standard_deviation=STDEV(gross))%>%
+  top_n(15,total)%>%
+  arrange(desc(total))
+```
+
+### Table that describes how ratings are distributed by genre:
+
+```{r}
+movies %>%
+  group_by(genre)%>%
+  summarise(average_rating=mean(rating),min_rating=min(rating),max_rating=max(rating),
+            median_rating=median(rating),standard_deviation=STDEV(gross))%>%
+  arrange(desc(average_rating))
+```
+
+### Distribution of ratings among different genres
+
+```{r}
+movies %>%
+  group_by(genre)%>%
+  ggplot(aes(x=rating, color=genre))+
+    geom_density(position="identity")+
+    labs(title="Distribution of ratings among different genres",
+       subtitle = "Density plot showing ratings among 17 genres", 
+       x = "Rating on a scale from 0 to 10",
+       y = "Density") +
+    theme_hc()
+```
+
+### Relationship between Gross Revenue & Facebook Likes:
+
+```{r}
+movies %>%
+  ggplot(aes(x=cast_facebook_likes,y=gross)) +
+      geom_point() +
+      geom_smooth(method = lm) +
+      xlim(c(0,125000)) +
+      ylim(c(0,500000000)) +
+      labs(title = "Facebook Likes and Gross Revenue",
+        subtitle = "Scatter plot showing relationship between facebook likes and gross revenue", 
+        x = "Number of facebook likes",
+        y = "Gross Revenue collected") +
+      theme_hc()
+
+cor.test(cast_facebook_likes ~ gross, data = movies)
+```
+
+>The pearson correlation coefficient between facebook likes and gross revenue collected is 0.213, thus showing how facebook likes are not a reliable indicator of the gross revenue to be collected from a film.
+
+### Relationship between Gross Revenue & Budget:
+
+```{r}
+movies %>%
+  ggplot(aes(x=budget,y=gross))+
+  geom_point()+
+  geom_smooth(method = lm)+
+  labs(title="Budget and Gross Revenue Collected",
+       subtitle = "Scatter plot showing relationship between budget and gross revenue", 
+       x = "Budget for film",
+       y = "Gross Revenue Collected") +
+  theme_hc()
+
+cor.test(budget ~ gross, data = movies)
+```
+
+>A film’s budget is a better indicator of gross revenue collected than a film’s facebook likes. This is both deductible from the more positively correlated scatter plot as well from the correlation test that showed a 0.641 correlation.
+
+### Relationship between Gross Revenue & IMDB Ratings:
+```{r}
+movies %>%
+  ggplot(aes(x=rating,y=gross))+
+  geom_point()+
+  geom_smooth()+
+  labs(title="IMDB ratings and Gross revenue ",
+       subtitle = "Scatter plot showing relationship between IMDB ratings and gross revenue", 
+       x = "IMDB Ratings on scale from 0 to 10",
+       y = "Gross Revenue Collected") +
+  theme_hc()
+
+cor.test(rating ~ gross, data = movies)
+```
+
+>Having performed the Pearson correlation, we can deduct IMDB Ratings to be a weak indicator of gross revenue. We would argue that in today’s movie industry, aspects like digital and physical marketing, PR and premieres are more important contributors to visibility.
+Furthermore, we have performed a logarithmic analysis so that all data was to be included in the analysis.
+
+In inferential statistics, the null hypothesis is a general statement or default position that there is no difference between two measured phenomena or that two samples derive from the same general population. Here, we will explore whether the mean IMDB rating for Steven Spielberg and Tim Burton are the same or not. 
+
+## Null and Alternative hypothesis
+
+### H0: Mean IMDB rating for Steven Spielberg and Tim Burton are NOT significantly different.
+
+### H1: Mean IMDB rating for Steven Spielberg and Tim Burton are significantly different.
+
+## Ratings on Steven Spielberg's Films with confidence intervals
 
 ```{r}
 #creating the new data set
@@ -94,8 +211,7 @@ t.test(steve_ratings$rating, data=steve_ratings)
 ```
 
 
-## Ratings on Tim Burton's Films
-
+## Ratings on Tim Burton's Films with confidence intervals
 
 ```{r}
 #creating the new data set

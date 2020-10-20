@@ -3,23 +3,21 @@ categories:
 - ""
 - ""
 date: "2017-10-31T22:42:51-05:00"
-description: "An ananlysis of IMBD rating of different directors"
+description: "An comprehensive ananlysis of IMBD dataset"
 draft: false
 image: Movie.jpg
 keywords: ""
 slug: blog5
-title: IMBD Rating
+title: IMBD Dataset
 ---
 
 
 
-<p>We will explore whether the mean IMDB rating for Steven Spielberg and Tim Burton are the same or not.</p>
 <blockquote>
-<p>Before anything, write down the null and alternative hypotheses, as well as the resulting test statistic and the associated t-stat or p-value.</p>
-<p>H0: Mean IMDB rating for Steven Spielberg and Tim Burton are NOT significantly different.
-H1: Mean IMDB rating for Steven Spielberg and Tim Burton are significantly different.</p>
+<p>In this assignment, we will focus on two objectives. The first objective is to examine the IMBD dataset and explore the relationship between gross revenue and other variables such as genre, Facebook likes, Budgets, and IMBD ratings. The second objective is to utilize null hypothesis in a data example, exploring whether the mean IMDB rating for Steven Spielberg and Tim Burton are the same or not.</p>
 </blockquote>
-<p><em>Here we examine the data set</em></p>
+<div id="the-data-imbd-movies-data" class="section level2">
+<h2>The data: IMBD movies data</h2>
 <pre class="r"><code>movies &lt;- read_csv(here::here(&quot;data&quot;, &quot;movies.csv&quot;))
 glimpse(movies)</code></pre>
 <pre><code>## Rows: 2,961
@@ -249,8 +247,250 @@ skim(movies)</code></pre>
 </tr>
 </tbody>
 </table>
-<div id="ratings-on-steven-spielbergs-films" class="section level2">
-<h2>Ratings on Steven Spielberg’s Films</h2>
+<pre class="r"><code>distinct(movies)</code></pre>
+<pre><code>## # A tibble: 2,961 x 11
+##    title genre director  year duration  gross budget cast_facebook_l~  votes
+##    &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;    &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;            &lt;dbl&gt;  &lt;dbl&gt;
+##  1 Avat~ Acti~ James C~  2009      178 7.61e8 2.37e8             4834 8.86e5
+##  2 Tita~ Drama James C~  1997      194 6.59e8 2.00e8            45223 7.93e5
+##  3 Jura~ Acti~ Colin T~  2015      124 6.52e8 1.50e8             8458 4.18e5
+##  4 The ~ Acti~ Joss Wh~  2012      173 6.23e8 2.20e8            87697 9.95e5
+##  5 The ~ Acti~ Christo~  2008      152 5.33e8 1.85e8            57802 1.68e6
+##  6 Star~ Acti~ George ~  1999      136 4.75e8 1.15e8            37723 5.35e5
+##  7 Star~ Acti~ George ~  1977      125 4.61e8 1.10e7            13485 9.11e5
+##  8 Aven~ Acti~ Joss Wh~  2015      141 4.59e8 2.50e8            92000 4.63e5
+##  9 The ~ Acti~ Christo~  2012      164 4.48e8 2.50e8           106759 1.14e6
+## 10 Shre~ Adve~ Andrew ~  2004       93 4.36e8 1.50e8             1148 3.15e5
+## # ... with 2,951 more rows, and 2 more variables: reviews &lt;dbl&gt;, rating &lt;dbl&gt;</code></pre>
+<blockquote>
+<p>We are now looking at a subset of the IMDB Movie Dataset. The variables set is made up of both numeric and character variable types. There are no missing values, shown by both n_missing = 0 and complete_rate = 1 for all variables. However, not all entries are distinct, which is easily explainable for genre and director: Films are subsets of Genres and Directors do not always shoot only one film. The title variable also has not solely distinct variables, which can be explained by same names used for different films.</p>
+</blockquote>
+</div>
+<div id="analysis-of-imdb-dataset" class="section level2">
+<h2>Analysis of IMDB dataset</h2>
+<div id="table-with-the-count-of-movies-by-genre-ranked-in-descending-order" class="section level3">
+<h3>Table with the count of movies by genre, ranked in descending order:</h3>
+<pre class="r"><code>movies %&gt;%
+  group_by(genre) %&gt;%
+  summarise(count=n())%&gt;%
+  arrange(desc(count))</code></pre>
+<pre><code>## # A tibble: 17 x 2
+##    genre       count
+##    &lt;chr&gt;       &lt;int&gt;
+##  1 Comedy        848
+##  2 Action        738
+##  3 Drama         498
+##  4 Adventure     288
+##  5 Crime         202
+##  6 Biography     135
+##  7 Horror        131
+##  8 Animation      35
+##  9 Fantasy        28
+## 10 Documentary    25
+## 11 Mystery        16
+## 12 Sci-Fi          7
+## 13 Family          3
+## 14 Musical         2
+## 15 Romance         2
+## 16 Western         2
+## 17 Thriller        1</code></pre>
+</div>
+<div id="table-with-the-average-gross-earning-and-budget-by-genre" class="section level3">
+<h3>Table with the average gross earning and budget by genre:</h3>
+<pre class="r"><code>movies %&gt;%
+  select(genre,gross,budget)%&gt;%
+  group_by(genre)%&gt;%
+  summarise(avg_gross=mean(gross),avg_budget=mean(budget))%&gt;%
+  mutate(return_on_budget=avg_gross/avg_budget)%&gt;%
+  arrange(desc(return_on_budget))</code></pre>
+<pre><code>## # A tibble: 17 x 4
+##    genre        avg_gross avg_budget return_on_budget
+##    &lt;chr&gt;            &lt;dbl&gt;      &lt;dbl&gt;            &lt;dbl&gt;
+##  1 Musical      92084000    3189500          28.9    
+##  2 Family      149160478.  14833333.         10.1    
+##  3 Western      20821884    3465000           6.01   
+##  4 Documentary  17353973.   5887852.          2.95   
+##  5 Horror       37713738.  13504916.          2.79   
+##  6 Fantasy      42408841.  17582143.          2.41   
+##  7 Comedy       42630552.  24446319.          1.74   
+##  8 Mystery      67533021.  39218750           1.72   
+##  9 Animation    98433792.  61701429.          1.60   
+## 10 Biography    45201805.  28543696.          1.58   
+## 11 Adventure    95794257.  66290069.          1.45   
+## 12 Drama        37465371.  26242933.          1.43   
+## 13 Crime        37502397.  26596169.          1.41   
+## 14 Romance      31264848.  25107500           1.25   
+## 15 Action       86583860.  71354888.          1.21   
+## 16 Sci-Fi       29788371.  27607143.          1.08   
+## 17 Thriller         2468     300000           0.00823</code></pre>
+</div>
+<div id="table-that-shows-the-top-15-directors-who-have-created-the-highest-gross-revenue-in-the-box-office" class="section level3">
+<h3>Table that shows the top 15 directors who have created the highest gross revenue in the box office:</h3>
+<pre class="r"><code>movies %&gt;%
+  group_by(director)%&gt;%
+  summarise(total=sum(gross),mean=mean(gross),median=median(gross),standard_deviation=STDEV(gross))%&gt;%
+  top_n(15,total)%&gt;%
+  arrange(desc(total))</code></pre>
+<pre><code>## # A tibble: 15 x 5
+##    director               total       mean     median standard_deviation
+##    &lt;chr&gt;                  &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;              &lt;dbl&gt;
+##  1 Steven Spielberg  4014061704 174524422. 164435221          101421051.
+##  2 Michael Bay       2231242537 171634041. 138396624          127161579.
+##  3 Tim Burton        2071275480 129454718.  76519172          108726924.
+##  4 Sam Raimi         2014600898 201460090. 234903076          162126632.
+##  5 James Cameron     1909725910 318287652. 175562880.         309171337.
+##  6 Christopher Nolan 1813227576 226653447  196667606.         187224133.
+##  7 George Lucas      1741418480 348283696  380262555          146193880.
+##  8 Robert Zemeckis   1619309108 124562239. 100853835           91300279.
+##  9 Clint Eastwood    1378321100  72543216.  46700000           75487408.
+## 10 Francis Lawrence  1358501971 271700394. 281666058          135437020.
+## 11 Ron Howard        1335988092 111332341  101587923           81933761.
+## 12 Gore Verbinski    1329600995 189942999. 123207194          154473822.
+## 13 Andrew Adamson    1137446920 284361730  279680930.         120895765.
+## 14 Shawn Levy        1129750988 102704635.  85463309           65484773.
+## 15 Ridley Scott      1128857598  80632686.  47775715           68812285.</code></pre>
+</div>
+<div id="table-that-describes-how-ratings-are-distributed-by-genre" class="section level3">
+<h3>Table that describes how ratings are distributed by genre:</h3>
+<pre class="r"><code>movies %&gt;%
+  group_by(genre)%&gt;%
+  summarise(average_rating=mean(rating),min_rating=min(rating),max_rating=max(rating),
+            median_rating=median(rating),standard_deviation=STDEV(gross))%&gt;%
+  arrange(desc(average_rating))</code></pre>
+<pre><code>## # A tibble: 17 x 6
+##    genre    average_rating min_rating max_rating median_rating standard_deviati~
+##    &lt;chr&gt;             &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;         &lt;dbl&gt;             &lt;dbl&gt;
+##  1 Biograp~           7.11        4.5        8.9          7.2          49220303.
+##  2 Crime              6.92        4.8        9.3          6.9          38309059.
+##  3 Mystery            6.86        4.6        8.5          6.9          54787287.
+##  4 Musical            6.75        6.3        7.2          6.75        126255330.
+##  5 Drama              6.73        2.1        8.8          6.8          51331049.
+##  6 Documen~           6.66        1.6        8.5          7.4          29441650.
+##  7 Sci-Fi             6.66        5          8.2          6.4          30917838.
+##  8 Animati~           6.65        4.5        8            6.9          86201928.
+##  9 Romance            6.65        6.2        7.1          6.65         44107152.
+## 10 Adventu~           6.51        2.3        8.6          6.6          96677829.
+## 11 Family             6.5         5.7        7.9          5.9         247535241.
+## 12 Action             6.23        2.1        9            6.3          94846029.
+## 13 Fantasy            6.15        4.3        7.9          6.45         27036114.
+## 14 Comedy             6.11        1.9        8.8          6.2          48067667.
+## 15 Horror             5.83        3.6        8.5          5.9          31505660.
+## 16 Western            5.70        4.1        7.3          5.70         29101851.
+## 17 Thriller           4.8         4.8        4.8          4.8                NA</code></pre>
+</div>
+<div id="distribution-of-ratings-among-different-genres" class="section level3">
+<h3>Distribution of ratings among different genres</h3>
+<pre class="r"><code>movies %&gt;%
+  group_by(genre)%&gt;%
+  ggplot(aes(x=rating, color=genre))+
+    geom_density(position=&quot;identity&quot;)+
+    labs(title=&quot;Distribution of ratings among different genres&quot;,
+       subtitle = &quot;Density plot showing ratings among 17 genres&quot;, 
+       x = &quot;Rating on a scale from 0 to 10&quot;,
+       y = &quot;Density&quot;) +
+    theme_hc()</code></pre>
+<p><img src="/blogs/blog5_files/figure-html/unnamed-chunk-5-1.png" width="648" style="display: block; margin: auto;" /></p>
+</div>
+<div id="relationship-between-gross-revenue-facebook-likes" class="section level3">
+<h3>Relationship between Gross Revenue &amp; Facebook Likes:</h3>
+<pre class="r"><code>movies %&gt;%
+  ggplot(aes(x=cast_facebook_likes,y=gross)) +
+      geom_point() +
+      geom_smooth(method = lm) +
+      xlim(c(0,125000)) +
+      ylim(c(0,500000000)) +
+      labs(title = &quot;Facebook Likes and Gross Revenue&quot;,
+        subtitle = &quot;Scatter plot showing relationship between facebook likes and gross revenue&quot;, 
+        x = &quot;Number of facebook likes&quot;,
+        y = &quot;Gross Revenue collected&quot;) +
+      theme_hc()</code></pre>
+<p><img src="/blogs/blog5_files/figure-html/unnamed-chunk-6-1.png" width="648" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cor.test(cast_facebook_likes ~ gross, data = movies)</code></pre>
+<pre><code>## 
+##  Pearson&#39;s product-moment correlation
+## 
+## data:  cast_facebook_likes and gross
+## t = 12, df = 2959, p-value &lt;2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.179 0.247
+## sample estimates:
+##   cor 
+## 0.213</code></pre>
+<blockquote>
+<p>The pearson correlation coefficient between facebook likes and gross revenue collected is 0.213, thus showing how facebook likes are not a reliable indicator of the gross revenue to be collected from a film.</p>
+</blockquote>
+</div>
+<div id="relationship-between-gross-revenue-budget" class="section level3">
+<h3>Relationship between Gross Revenue &amp; Budget:</h3>
+<pre class="r"><code>movies %&gt;%
+  ggplot(aes(x=budget,y=gross))+
+  geom_point()+
+  geom_smooth(method = lm)+
+  labs(title=&quot;Budget and Gross Revenue Collected&quot;,
+       subtitle = &quot;Scatter plot showing relationship between budget and gross revenue&quot;, 
+       x = &quot;Budget for film&quot;,
+       y = &quot;Gross Revenue Collected&quot;) +
+  theme_hc()</code></pre>
+<p><img src="/blogs/blog5_files/figure-html/unnamed-chunk-7-1.png" width="648" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cor.test(budget ~ gross, data = movies)</code></pre>
+<pre><code>## 
+##  Pearson&#39;s product-moment correlation
+## 
+## data:  budget and gross
+## t = 45, df = 2959, p-value &lt;2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.619 0.662
+## sample estimates:
+##   cor 
+## 0.641</code></pre>
+<blockquote>
+<p>A film’s budget is a better indicator of gross revenue collected than a film’s facebook likes. This is both deductible from the more positively correlated scatter plot as well from the correlation test that showed a 0.641 correlation.</p>
+</blockquote>
+</div>
+<div id="relationship-between-gross-revenue-imdb-ratings" class="section level3">
+<h3>Relationship between Gross Revenue &amp; IMDB Ratings:</h3>
+<pre class="r"><code>movies %&gt;%
+  ggplot(aes(x=rating,y=gross))+
+  geom_point()+
+  geom_smooth()+
+  labs(title=&quot;IMDB ratings and Gross revenue &quot;,
+       subtitle = &quot;Scatter plot showing relationship between IMDB ratings and gross revenue&quot;, 
+       x = &quot;IMDB Ratings on scale from 0 to 10&quot;,
+       y = &quot;Gross Revenue Collected&quot;) +
+  theme_hc()</code></pre>
+<p><img src="/blogs/blog5_files/figure-html/unnamed-chunk-8-1.png" width="648" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cor.test(rating ~ gross, data = movies)</code></pre>
+<pre><code>## 
+##  Pearson&#39;s product-moment correlation
+## 
+## data:  rating and gross
+## t = 15, df = 2959, p-value &lt;2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.236 0.303
+## sample estimates:
+##   cor 
+## 0.269</code></pre>
+<blockquote>
+<p>Having performed the Pearson correlation, we can deduct IMDB Ratings to be a weak indicator of gross revenue. We would argue that in today’s movie industry, aspects like digital and physical marketing, PR and premieres are more important contributors to visibility.
+Furthermore, we have performed a logarithmic analysis so that all data was to be included in the analysis.</p>
+</blockquote>
+<p>In inferential statistics, the null hypothesis is a general statement or default position that there is no difference between two measured phenomena or that two samples derive from the same general population. Here, we will explore whether the mean IMDB rating for Steven Spielberg and Tim Burton are the same or not.</p>
+</div>
+</div>
+<div id="null-and-alternative-hypothesis" class="section level2">
+<h2>Null and Alternative hypothesis</h2>
+<div id="h0-mean-imdb-rating-for-steven-spielberg-and-tim-burton-are-not-significantly-different." class="section level3">
+<h3>H0: Mean IMDB rating for Steven Spielberg and Tim Burton are NOT significantly different.</h3>
+</div>
+<div id="h1-mean-imdb-rating-for-steven-spielberg-and-tim-burton-are-significantly-different." class="section level3">
+<h3>H1: Mean IMDB rating for Steven Spielberg and Tim Burton are significantly different.</h3>
+</div>
+</div>
+<div id="ratings-on-steven-spielbergs-films-with-confidence-intervals" class="section level2">
+<h2>Ratings on Steven Spielberg’s Films with confidence intervals</h2>
 <pre class="r"><code>#creating the new data set
 CI_steve &lt;- movies %&gt;%
   filter(director==&quot;Steven Spielberg&quot;) %&gt;% 
@@ -283,8 +523,8 @@ t.test(steve_ratings$rating, data=steve_ratings)</code></pre>
 ## mean of x 
 ##      7.57</code></pre>
 </div>
-<div id="ratings-on-tim-burtons-films" class="section level2">
-<h2>Ratings on Tim Burton’s Films</h2>
+<div id="ratings-on-tim-burtons-films-with-confidence-intervals" class="section level2">
+<h2>Ratings on Tim Burton’s Films with confidence intervals</h2>
 <pre class="r"><code>#creating the new data set
 CI_tim &lt;- movies %&gt;%
   filter(director==&quot;Tim Burton&quot;) %&gt;% 
@@ -371,5 +611,5 @@ comp_rating %&gt;%
   
   #We add a frame around the ggplot.
    theme(panel.background = element_rect(colour = &quot;black&quot;, size=1))</code></pre>
-<p><img src="/blogs/blog5_files/figure-html/unnamed-chunk-3-1.png" width="864" style="display: block; margin: auto;" /></p>
+<p><img src="/blogs/blog5_files/figure-html/unnamed-chunk-11-1.png" width="864" style="display: block; margin: auto;" /></p>
 </div>

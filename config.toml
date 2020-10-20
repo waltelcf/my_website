@@ -116,8 +116,8 @@ disqusShortname = ""
       url = "blogs/blog4"
 
     [[params.tiles.showcase]]
-      title = "IMBD Ratings"
-      subtitle = "Differences in ratings between directors"
+      title = "IMBD Dataset"
+      subtitle = "An comprehensive ananlysis of IMBD dataset"
       image = "Movie.jpg"
       url = "blogs/blog5"
 
