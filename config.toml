@@ -138,7 +138,7 @@ disqusShortname = ""
   # Section Type Two
   [params.two]
     enable = true
-    title = "Personal Introduction"
+    title = "Welcome to my website"
     subtitle = """I'm excited that you found your way onto my portfolio website. 
     This is the place where I display my data analytics work as part of my current studies at London Business School.
     Please see my blogs by clicking the bottom below. You will find my selective projects and challenges in my pursuit to use R language explaining real world data. 
