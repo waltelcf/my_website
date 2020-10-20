@@ -81,9 +81,9 @@ disqusShortname = ""
   [params.banner]
     # To change the background image on the homepage banner, replace 'banner.jpg' in
     # the 'static/img' folder.
-    title = "Hi, my name is Walter"
-    subtitle = "This is my portfolio website"
-    buttonText = "Get Started"
+    title = "Hi, my name is Walter, and I love using R to analyze real world data"
+    subtitle = "This is my portfolio website where you can find some of my data analytic works"
+    buttonText = "My Data Analytic Work"
 
 
   # Tiles Section
@@ -92,7 +92,7 @@ disqusShortname = ""
     # Display your showcases here.
     
     [[params.tiles.showcase]]
-      title = "Climate"
+      title = "Climate Change"
       subtitle = "Climate change is real"
       image = "Climate.jpg"
       url = "blogs/blog1" 
@@ -104,20 +104,20 @@ disqusShortname = ""
       url = "blogs/blog2"
   
    [[params.tiles.showcase]]
-      title = "DJIA"
-      subtitle = "Returns of financial stocks"
+      title = "DJIA Risk & Return Profile"
+      subtitle = "Analyze the relationship between risk and return on DJIA stocks"
       image = "DJ.jpg"
       url = "blogs/blog3"
       
     [[params.tiles.showcase]]
       title = "Yield Curve Inversion"
-      subtitle = "plot the yield curves since 1999 to see when the yield curves flatten"
+      subtitle = "Plot the yield curves since 1999 to analyze when the yield curves flatten"
       image = "IC.jpg"
       url = "blogs/blog4"
 
     [[params.tiles.showcase]]
-      title = "IMBD"
-      subtitle = "Differences between directors"
+      title = "IMBD Ratings"
+      subtitle = "Differences in ratings between directors"
       image = "Movie.jpg"
       url = "blogs/blog5"
 
@@ -145,7 +145,7 @@ disqusShortname = ""
     Experienced professionals with a demonstrated history of working in the financial industry. 
     Skilled in Financial Modelling, Excel, Social Entrepreneurship, Creative Strategy, Bilingual Communications, and Microsoft Office. 
     """
-    buttonText = "Get Started"
+    buttonText = "My Data Analytic Work"
     url = "blogs"
 
 
@@ -188,7 +188,7 @@ disqusShortname = ""
   # Footer section
   [params.footer]
     enable = true
-    copyright = "Company Name"
+    copyright = "WalterLi"
 
     # Uses font awesome icons
     #[[params.footer.social]]

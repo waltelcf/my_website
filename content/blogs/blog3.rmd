@@ -3,12 +3,12 @@ categories:
 - ""
 - ""
 date: "2017-10-31T22:26:13-05:00"
-description: 
+description: "An analysis on the relationship between risk and return on DJIA stocks"
 draft: false
 image: DJ.jpg
 keywords: ""
 slug: blog3
-title: DJIA
+title: DJIA Risk & Return Profile
 ---
 
 ```{r, setup, echo=FALSE}
