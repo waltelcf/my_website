@@ -21,12 +21,12 @@ title: Excess rentals in TfL bike sharing
 
 # Download TFL data to temporary file
 httr::GET(url, write_disk(bike.temp &lt;- tempfile(fileext = &quot;.xlsx&quot;)))</code></pre>
-<pre><code>## Response [https://airdrive-secure.s3-eu-west-1.amazonaws.com/london/dataset/number-bicycle-hires/2020-09-18T09%3A06%3A54/tfl-daily-cycle-hires.xlsx?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAJJDIMAIVZJDICKHA%2F20201020%2Feu-west-1%2Fs3%2Faws4_request&amp;X-Amz-Date=20201020T053031Z&amp;X-Amz-Expires=300&amp;X-Amz-Signature=62931818397404bfa35120e9c2c22146db09888bda74571fb052a00db8cdefba&amp;X-Amz-SignedHeaders=host]
-##   Date: 2020-10-20 05:30
+<pre><code>## Response [https://airdrive-secure.s3-eu-west-1.amazonaws.com/london/dataset/number-bicycle-hires/2020-09-18T09%3A06%3A54/tfl-daily-cycle-hires.xlsx?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAJJDIMAIVZJDICKHA%2F20201020%2Feu-west-1%2Fs3%2Faws4_request&amp;X-Amz-Date=20201020T053627Z&amp;X-Amz-Expires=300&amp;X-Amz-Signature=cf9b1e23b28865913c0852e825d43570e2c990b687e033658a63afa4a4e41519&amp;X-Amz-SignedHeaders=host]
+##   Date: 2020-10-20 05:36
 ##   Status: 200
 ##   Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
 ##   Size: 165 kB
-## &lt;ON DISK&gt;  C:\Users\walte\AppData\Local\Temp\RtmpycTpyW\file8b90287f3166.xlsx</code></pre>
+## &lt;ON DISK&gt;  C:\Users\walte\AppData\Local\Temp\RtmpS6ajLg\file62003d8a18b.xlsx</code></pre>
 <pre class="r"><code># Use read_excel to read it as dataframe
 bike0 &lt;- read_excel(bike.temp,
                    sheet = &quot;Data&quot;,
@@ -182,8 +182,10 @@ plot_monthly_average_bike</code></pre>
 <blockquote>
 <p>From the graph, we can see that the COVID-19 has significantly affected the monthly bike travel, as the number from Feb to May 2020 were significantly lower than the historical level.</p>
 </blockquote>
-<p>##Percentage changes from the expected level of weekly rentals.
-The second graph looks at percentage changes from the expected level of weekly rentals. The two grey shaded rectangles correspond to the second (weeks 14-26) and fourth (weeks 40-52) quarters.</p>
+</div>
+<div id="percentage-changes-from-the-expected-level-of-weekly-rentals." class="section level2">
+<h2>Percentage changes from the expected level of weekly rentals.</h2>
+<p>The second graph looks at percentage changes from the expected level of weekly rentals. The two grey shaded rectangles correspond to the second (weeks 14-26) and fourth (weeks 40-52) quarters.</p>
 <pre class="r"><code>library(grid)</code></pre>
 <p>We first start by calculating the historic weekly average between 2015 and 2019</p>
 <pre class="r"><code>historic_weeklyaverage &lt;- bike %&gt;%
@@ -286,7 +288,9 @@ plot_weekly_difference &lt;- weekly_difference %&gt;%
   facet_wrap(~year)
 
 plot_weekly_difference</code></pre>
-<p><img src="/blogs/blog2_files/figure-html/unnamed-chunk-10-1.png" width="1440" style="display: block; margin: auto;" />
-&gt;Based on the two graphs above, we can observe that monthly and weekly activity can vary significantly from the average. Hence, given this strong variation, the Median would be a better metric to calculate expected rentals.</p>
+<p><img src="/blogs/blog2_files/figure-html/unnamed-chunk-10-1.png" width="1440" style="display: block; margin: auto;" /></p>
+<blockquote>
+<p>Based on the two graphs above, we can observe that monthly and weekly activity can vary significantly from the average. Hence, given this strong variation, the Median would be a better metric to calculate expected rentals.</p>
+</blockquote>
 <p><em>Last updated:</em> 20 October, 2020</p>
 </div>

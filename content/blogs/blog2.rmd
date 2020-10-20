@@ -122,8 +122,10 @@ plot_monthly_average_bike
 
 >From the graph, we can see that the COVID-19 has significantly affected the monthly bike travel, as the number from Feb to May 2020 were significantly lower than the historical level. 
 
-##Percentage changes from the expected level of weekly rentals.
+## Percentage changes from the expected level of weekly rentals.
+
 The second graph looks at percentage changes from the expected level of weekly rentals. The two grey shaded rectangles correspond to the second (weeks 14-26) and fourth (weeks 40-52) quarters.
+
 ```{r}
 library(grid)
 ```
@@ -194,6 +196,7 @@ plot_weekly_difference <- weekly_difference %>%
 
 plot_weekly_difference
 ```
+
 >Based on the two graphs above, we can observe that monthly and weekly activity can vary significantly from the average. Hence, given this strong variation, the Median would be a better metric to calculate expected rentals.
 
 *Last updated:* `r format(Sys.time(), '%d %B, %Y')`
