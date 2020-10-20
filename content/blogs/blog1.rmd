@@ -225,3 +225,4 @@ boot_delta
 
 > With 95% certainty, we can deduct that the population mean is within the interval of 0.917 and 1.02. In other words, we can be 95% sure that during the interval of 2011 till present the mean anomaly is close to 1 degree.
 
+*Last updated:* `r format(Sys.time(), '%d %B, %Y')`
