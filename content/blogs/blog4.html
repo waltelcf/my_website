@@ -13,9 +13,13 @@ title: Yield Curve Inversion
 
 
 
-<pre class="r"><code># Get a list of FRED codes for US rates and US yield curve; choose monthly frequency
-# to see, eg., the 3-month T-bill https://fred.stlouisfed.org/series/TB3MS
-tickers &lt;- c(&#39;TB3MS&#39;, # 3-month Treasury bill (or T-bill)
+<blockquote>
+<p>The yield curve is often quoted by the street as the indicator for economics recession. In the past, the yield curve has exhibited a strong correlation with the economic cycle and successfully predicted several recessions. This analysis aim to take a deep dive into the yield curve inversion and visualize its relationship with recessions.</p>
+</blockquote>
+<div id="the-data-a-list-of-fred-codes-for-us-rates-and-us-yield-curve" class="section level2">
+<h2>The Data: a list of FRED codes for US rates and US yield curve</h2>
+<p>Data Source: FRED</p>
+<pre class="r"><code>tickers &lt;- c(&#39;TB3MS&#39;, # 3-month Treasury bill (or T-bill)
              &#39;TB6MS&#39;, # 6-month
              &#39;GS1&#39;,   # 1-year
              &#39;GS2&#39;,   # 2-year, etc....
@@ -128,6 +132,7 @@ glimpse(df)</code></pre>
 </ul>
 <p>The first thing would be to join this dataframe <code>df</code> with the dataframe <code>mylookup</code> so we have a more readable version of maturities, durations, etc.</p>
 <pre class="r"><code>yield_curve &lt;-left_join(df,mylookup,by=&quot;symbol&quot;) </code></pre>
+</div>
 <div id="plotting-the-yield-curve" class="section level2">
 <h2>Plotting the yield curve</h2>
 <div id="yields-on-us-rates-by-duration-since-1960" class="section level3">
@@ -186,16 +191,10 @@ ggplot(diff_yield_curve, aes(x = date,
          y = &#39;%&#39;)+
     theme(plot.title = element_text(face = &quot;bold&quot;))</code></pre>
 <p><img src="/blogs/blog4_files/figure-html/unnamed-chunk-5-1.png" width="648" style="display: block; margin: auto;" /></p>
-<p>According to <a href="https://en.wikipedia.org/wiki/List_of_recessions_in_the_United_States">Wikipedia’s list of recession in the United States</a>, since 1999 there have been two recession in the US: between Mar 2001–Nov 2001 and between Dec 2007–June 2009. Does the yield curve seem to flatten before these recessions? Can a yield curve flattening really mean a recession is coming in the US? Since 1999, when did short-term (3 months) yield more than longer term (10 years) debt?</p>
-<p>Besides calculating the spread (10year - 3months), there are a few things we need to do to produce our final plot</p>
-<ol style="list-style-type: decimal">
-<li>Setup data for US recessions</li>
-<li>Superimpose recessions as the grey areas in our plot</li>
-<li>Plot the spread between 30 years and 3 months as a blue/red ribbon, based on whether the spread is positive (blue) or negative(red)</li>
-</ol>
-<ul>
-<li>For the first, the code below creates a dataframe with all US recessions since 1946</li>
-</ul>
+</div>
+</div>
+<div id="dataframe-with-all-us-recessions-since-1946" class="section level2">
+<h2>Dataframe with all US recessions since 1946</h2>
 <pre class="r"><code># get US recession dates after 1946 from Wikipedia 
 # https://en.wikipedia.org/wiki/List_of_recessions_in_the_United_States
 
@@ -226,6 +225,9 @@ recessions</code></pre>
 select(date, symbol, price) %&gt;% 
 pivot_wider(names_from = symbol, values_from = price) %&gt;% 
 mutate(difference=GS10-TB3MS)</code></pre>
+</div>
+<div id="yield-curve-inversion-plot" class="section level2">
+<h2>Yield curve inversion plot</h2>
 <pre class="r"><code>library(scales)
 
 yield_curve_wide %&gt;% 
@@ -252,6 +254,10 @@ geom_ribbon(aes(ymin = pmin(difference,0),
        caption=&quot;Source: FRED, Federal Reserve Bank of St.Louis&quot;,
        x=&quot;&quot;,
        y=&quot;Difference (10 year-3month) yield in %&quot;)</code></pre>
-<p><img src="/blogs/blog4_files/figure-html/unnamed-chunk-7-1.png" width="1440" style="display: block; margin: auto;" /></p>
-</div>
+<p><img src="/blogs/blog4_files/figure-html/unnamed-chunk-7-1.png" width="1440" style="display: block; margin: auto;" />
+In this plot, we use the dataframe for US recessions, superimpose recessions as the grey areas in our plot, and plot the spread between 30 years and 3 months as a blue/red ribbon, based on whether the spread is positive (blue) or negative(red)</p>
+<blockquote>
+<p>Base on the plot, we can observe that for the past 6 ressions, the inverted yield curve was able to successful predict 5 of them, demonstrating a strong predictability for recession. Therefore, yield curve inversion can be served as a strong indicator for recession. As we see the yield curve inverted again in 2019, the question is: when will the recession come?</p>
+</blockquote>
+<p><em>Last updated:</em> 20 October, 2020</p>
 </div>

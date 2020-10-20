@@ -48,9 +48,11 @@ title: DJIA Risk & Return Profile
        x = &quot;&quot;,
        y = &quot;&quot;) +
   theme_hc()</code></pre>
-<p><img src="/blogs/blog3_files/figure-html/unnamed-chunk-2-1.png" width="648" style="display: block; margin: auto;" />
-## Selecting the DJIA stock from NYSE
-In order to analyse 30 stocks and its respective tickers plus the SP500 ETF, we are using the Dow Jones Industrial Average dataset.</p>
+<p><img src="/blogs/blog3_files/figure-html/unnamed-chunk-2-1.png" width="648" style="display: block; margin: auto;" /></p>
+</div>
+<div id="selecting-the-djia-stock-from-nyse" class="section level2">
+<h2>Selecting the DJIA stock from NYSE</h2>
+<p>In order to analyse 30 stocks and its respective tickers plus the SP500 ETF, we are using the Dow Jones Industrial Average dataset.</p>
 <pre class="r"><code>djia_url &lt;- &quot;https://en.wikipedia.org/wiki/Dow_Jones_Industrial_Average&quot;
 
 tables &lt;- djia_url %&gt;% 
@@ -152,8 +154,8 @@ print(summarise_monthly_returns)</code></pre>
          x = &quot;Monthly return&quot;,
          y = &quot;Density&quot;) +
     theme_hc() </code></pre>
-<p><img src="/blogs/blog3_files/figure-html/unnamed-chunk-6-1.png" width="648" style="display: block; margin: auto;" />
-Next,we plot the density plot together to see if the average return of each stock is similar.</p>
+<p><img src="/blogs/blog3_files/figure-html/unnamed-chunk-6-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p>Next,we plot the density plot together to see if the average return of each stock is similar.</p>
 <pre class="r"><code>myStocks_returns_monthly %&gt;%
   group_by(symbol)%&gt;%
   ggplot(aes(x=monthly_returns,color=symbol))+

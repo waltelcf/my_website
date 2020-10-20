@@ -43,13 +43,16 @@ library(rvest)    # scrape websites
 library(purrr)  
 library(lubridate) #to handle dates
 ```
+
 ## The Data: importing the data for NYSE
 
 ```{r}
 nyse <- read_csv(here::here("/data","nyse.csv"))
 
 ```
+
 ## Quick analysis on the NYSE stock
+
 Based on this dataset, we created a table and a bar plot that show the number of companies per sector, in descending order.
 
 ```{r}
@@ -67,7 +70,9 @@ nyse %>%
        y = "") +
   theme_hc()
 ```
+
 ## Selecting the DJIA stock from NYSE
+
 In order to analyse 30 stocks and its respective tickers plus the SP500 ETF, we are using the Dow Jones Industrial Average dataset.
 
 ```{r}
@@ -144,6 +149,7 @@ summarise_monthly_returns <- myStocks_returns_monthly %>%
             standard_deviation=STDEV(monthly_returns)) %>% 
 print(summarise_monthly_returns)
 ```
+
 ## Analyzing the return of DJIA stock
 
 First, we created a density plot for each of the stocks.
@@ -160,7 +166,9 @@ myStocks_returns_monthly %>%
          y = "Density") +
     theme_hc() 
 ```
+
 Next,we plot the density plot together to see if the average return of each stock is similar.
+
 ```{r}
 myStocks_returns_monthly %>%
   group_by(symbol)%>%
@@ -177,6 +185,7 @@ myStocks_returns_monthly %>%
   summarise(kurtosis=kurtosis(monthly_returns), standard_deviation=STDEV(monthly_returns)) %>% 
   arrange(desc(standard_deviation))
 ```
+
 >The density plot provides information about the distribution of returns for each stock. Inferring from the plot, we analyzed both the standard deviation and the kurtosis for each of the distribution chart. In statistics, kurtosis measures the “tailedness” of the probability distribution, while standard deviation measures the amount of variation of the data set. Generally speaking, the stock with the highest kurtosis and the lowest standard deviation would be the least risky, while the stock with the lowest kurtosis and the highest standard deviation would be the riskiest. From the plot and statistics above, the DOW stock is the riskiest, while AXP stock is the least risky.
 
 ##The expected monthly return & risk of DJIA stock
