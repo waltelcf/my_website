@@ -81,8 +81,8 @@ disqusShortname = ""
   [params.banner]
     # To change the background image on the homepage banner, replace 'banner.jpg' in
     # the 'static/img' folder.
-    title = "Hi, my name is Walter, and I love using R to analyze real world data"
-    subtitle = "This is my portfolio website where you can find some of my data analytic works"
+    title = "Hi, my name is Walter, and I love using R to analyze real world!"
+    subtitle = "This is my portfolio website where you will find a selection of my data analytic works"
     buttonText = "My Data Analytic Work"
 
 
@@ -139,9 +139,10 @@ disqusShortname = ""
   [params.two]
     enable = true
     title = "Personal Introduction"
-    subtitle = """MFA student at London Business School. 
-    Experienced professionals with a demonstrated history of working in the financial industry. 
-    Skilled in Financial Modelling, Excel, Social Entrepreneurship, Creative Strategy, Bilingual Communications, and Microsoft Office. 
+    subtitle = """I'm excited that you found your way onto my portfolio website. 
+    This is the place where I display my data analytics work as part of my current studies at London Business School.
+    Please see my blogs by clicking the bottom below. You will find my selective projects and challenges in my pursuit to use R language explaining real world data. 
+    Stay tuned for more updates as I continue to explore the world of data analytic. Feel free to leave a comment below, I would love to hear your feedback!
     """
     buttonText = "My Data Analytic Work"
     url = "blogs"
