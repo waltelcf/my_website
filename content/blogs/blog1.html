@@ -15,6 +15,9 @@ title: Climate Change is Real
 
 <div id="climate-change-is-real." class="section level1">
 <h1>Climate change is real.</h1>
+<div id="the-data-importing-the-data-on-the-change-in-temperature-from-1980-to-2019" class="section level2">
+<h2>The Data: importing the data on the change in temperature from 1980 to 2019</h2>
+<p>Data source: NASA Goddard Institute for Space Studies (GISS)</p>
 <pre class="r"><code>weather &lt;- 
   read_csv(&quot;https://data.giss.nasa.gov/gistemp/tabledata_v3/NH.Ts+dSST.csv&quot;, 
            skip = 1, 
@@ -446,8 +449,10 @@ skim(tidyweather)</code></pre>
 </tr>
 </tbody>
 </table>
+</div>
 <div id="increase-in-weather-anomalies-over-time" class="section level2">
 <h2>Increase in Weather Anomalies over time</h2>
+<p>Now, we analyze the increase in weather anomalies using ggplot.</p>
 <pre class="r"><code>tidyweather &lt;- tidyweather %&gt;%
   mutate(date = ymd(paste(as.character(Year), Month, &quot;1&quot;)),
          month = month(date, label=TRUE),
@@ -469,6 +474,7 @@ ggplot(tidyweather, aes(x=date, y = delta))+
 </div>
 <div id="weather-anomalies-by-month" class="section level2">
 <h2>Weather Anomalies by Month</h2>
+<p>Next, we further analyze the anomalies to see the trend for each month.</p>
 <pre class="r"><code>tidyweather$Month = factor(tidyweather$Month,levels=month.abb)
 
 tidyweather %&gt;%

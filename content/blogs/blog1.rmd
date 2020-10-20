@@ -44,7 +44,8 @@ library(vroom)
 
 # Climate change is real. 
 
-
+## The Data: importing the data on the change in temperature from 1980 to 2019
+Data source: NASA Goddard Institute for Space Studies (GISS) 
 ```{r weather_data, cache=TRUE}
 
 weather <- 
@@ -68,6 +69,7 @@ skim(tidyweather)
 ```
 
 ## Increase in Weather Anomalies over time
+Now, we analyze the increase in weather anomalies using ggplot. 
 
 ```{r scatter_plot}
 
@@ -92,6 +94,7 @@ ggplot(tidyweather, aes(x=date, y = delta))+
 
 
 ## Weather Anomalies by Month
+Next, we further analyze the anomalies to see the trend for each month. 
 
 ```{r facet_wrap}
 
@@ -203,7 +206,6 @@ ggplot(formula_ci, aes(x=Year, y=annual_average_delta, colour=Year)) +
   theme(legend.position = "none")+
   NULL
 ```
-
 
 ```{r, calculate_CI_using_bootstrap}
 

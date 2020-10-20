@@ -13,19 +13,20 @@ title: Excess rentals in TfL bike sharing
 
 
 
-<blockquote>
 <p>In this assignment, we are trying to analysis the potential effect of COVID-19 on the biking sharing.</p>
-</blockquote>
+<div id="the-data-importing-the-data-for-the-number-of-bicycle-hires" class="section level2">
+<h2>The Data: importing the data for the number of bicycle hires</h2>
+<p>Data Source: london.gov.uk</p>
 <pre class="r"><code>url &lt;- &quot;https://data.london.gov.uk/download/number-bicycle-hires/ac29363e-e0cb-47cc-a97a-e216d900a6b0/tfl-daily-cycle-hires.xlsx&quot;
 
 # Download TFL data to temporary file
 httr::GET(url, write_disk(bike.temp &lt;- tempfile(fileext = &quot;.xlsx&quot;)))</code></pre>
-<pre><code>## Response [https://airdrive-secure.s3-eu-west-1.amazonaws.com/london/dataset/number-bicycle-hires/2020-09-18T09%3A06%3A54/tfl-daily-cycle-hires.xlsx?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAJJDIMAIVZJDICKHA%2F20201020%2Feu-west-1%2Fs3%2Faws4_request&amp;X-Amz-Date=20201020T010923Z&amp;X-Amz-Expires=300&amp;X-Amz-Signature=f717919d8ea7a036939b45b10f1bd5522b496fdb09b1304625c44c1593b2b9e4&amp;X-Amz-SignedHeaders=host]
-##   Date: 2020-10-20 01:11
+<pre><code>## Response [https://airdrive-secure.s3-eu-west-1.amazonaws.com/london/dataset/number-bicycle-hires/2020-09-18T09%3A06%3A54/tfl-daily-cycle-hires.xlsx?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAJJDIMAIVZJDICKHA%2F20201020%2Feu-west-1%2Fs3%2Faws4_request&amp;X-Amz-Date=20201020T045830Z&amp;X-Amz-Expires=300&amp;X-Amz-Signature=12d3a27bbc35d1d422dcc9f3b39f63d3687fbfb34a8a533eb5712a94a64aaf78&amp;X-Amz-SignedHeaders=host]
+##   Date: 2020-10-20 04:58
 ##   Status: 200
 ##   Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
 ##   Size: 165 kB
-## &lt;ON DISK&gt;  C:\Users\walte\AppData\Local\Temp\RtmpojZ5nV\file80702415127a.xlsx</code></pre>
+## &lt;ON DISK&gt;  C:\Users\walte\AppData\Local\Temp\RtmpER3LCu\file55fc4fa5e54.xlsx</code></pre>
 <pre class="r"><code># Use read_excel to read it as dataframe
 bike0 &lt;- read_excel(bike.temp,
                    sheet = &quot;Data&quot;,
@@ -38,9 +39,13 @@ bike &lt;- bike0 %&gt;%
   mutate (year = year(day),
           month = lubridate::month(day, label = TRUE),
           week = isoweek(day))</code></pre>
-<blockquote>
 <p>We can easily create a facet grid that plots bikes hired by month and year.</p>
-</blockquote>
+<p><img src="C:/Users/walte/Documents/my_website/images/tfl_distributions_monthly.png" width="100%" style="display: block; margin: auto;" /></p>
+<p>Look at May and Jun and compare 2020 with the previous years.</p>
+<p><img src="C:/Users/walte/Documents/my_website/images/tfl_monthly.png" width="100%" style="display: block; margin: auto;" /></p>
+<p>The second one looks at percentage changes from the expected level of weekly rentals. The two grey shaded rectangles correspond to the second (weeks 14-26) and fourth (weeks 40-52) quarters.</p>
+<p><img src="C:/Users/walte/Documents/my_website/images/tfl_weekly.png" width="100%" style="display: block; margin: auto;" /></p>
+<p>For both of these graphs, we calculated the expected number of rentals per week or month between 2015-2019.</p>
 <pre class="r"><code>#We first start by calculating the historic monthly average between 2015 and 2019
 historic_average &lt;- bike %&gt;%
   filter(year %in% c(2015,2016,2017,2018,2019))%&gt;%
@@ -284,3 +289,4 @@ plot_weekly_difference &lt;- weekly_difference %&gt;%
 plot_weekly_difference</code></pre>
 <p><img src="/blogs/blog2_files/figure-html/unnamed-chunk-6-1.png" width="1440" style="display: block; margin: auto;" />
 &gt;Based on the two graphs above, we can observe that monthly and weekly activity can vary significantly from the average. Hence, given this strong variation, the Median would be a better metric to calculate expected rentals.</p>
+</div>
