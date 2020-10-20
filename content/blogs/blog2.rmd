@@ -71,6 +71,7 @@ bike <- bike0 %>%
 
 
 We can easily create a facet grid that plots bikes hired by month and year.
+image: tfl_distributions_monthly.png
 
 ```{r tfl_month_year_grid, echo=FALSE, out.width="100%"}
 knitr::include_graphics(here::here("images", "tfl_distributions_monthly.png"), error = FALSE)
@@ -204,3 +205,5 @@ plot_weekly_difference <- weekly_difference %>%
 plot_weekly_difference
 ```
 >Based on the two graphs above, we can observe that monthly and weekly activity can vary significantly from the average. Hence, given this strong variation, the Median would be a better metric to calculate expected rentals.
+
+*Last updated:* `r format(Sys.time(), '%d %B, %Y')`

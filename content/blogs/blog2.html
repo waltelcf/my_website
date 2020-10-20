@@ -21,12 +21,12 @@ title: Excess rentals in TfL bike sharing
 
 # Download TFL data to temporary file
 httr::GET(url, write_disk(bike.temp &lt;- tempfile(fileext = &quot;.xlsx&quot;)))</code></pre>
-<pre><code>## Response [https://airdrive-secure.s3-eu-west-1.amazonaws.com/london/dataset/number-bicycle-hires/2020-09-18T09%3A06%3A54/tfl-daily-cycle-hires.xlsx?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAJJDIMAIVZJDICKHA%2F20201020%2Feu-west-1%2Fs3%2Faws4_request&amp;X-Amz-Date=20201020T045830Z&amp;X-Amz-Expires=300&amp;X-Amz-Signature=12d3a27bbc35d1d422dcc9f3b39f63d3687fbfb34a8a533eb5712a94a64aaf78&amp;X-Amz-SignedHeaders=host]
-##   Date: 2020-10-20 04:58
+<pre><code>## Response [https://airdrive-secure.s3-eu-west-1.amazonaws.com/london/dataset/number-bicycle-hires/2020-09-18T09%3A06%3A54/tfl-daily-cycle-hires.xlsx?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAJJDIMAIVZJDICKHA%2F20201020%2Feu-west-1%2Fs3%2Faws4_request&amp;X-Amz-Date=20201020T051503Z&amp;X-Amz-Expires=300&amp;X-Amz-Signature=c93365edbebe914860ab860585da0f9909f0b26d91e3786b142c2f6623363659&amp;X-Amz-SignedHeaders=host]
+##   Date: 2020-10-20 05:15
 ##   Status: 200
 ##   Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
 ##   Size: 165 kB
-## &lt;ON DISK&gt;  C:\Users\walte\AppData\Local\Temp\RtmpER3LCu\file55fc4fa5e54.xlsx</code></pre>
+## &lt;ON DISK&gt;  C:\Users\walte\AppData\Local\Temp\RtmpU9XsgF\file6b2848fb18f.xlsx</code></pre>
 <pre class="r"><code># Use read_excel to read it as dataframe
 bike0 &lt;- read_excel(bike.temp,
                    sheet = &quot;Data&quot;,
@@ -39,7 +39,8 @@ bike &lt;- bike0 %&gt;%
   mutate (year = year(day),
           month = lubridate::month(day, label = TRUE),
           week = isoweek(day))</code></pre>
-<p>We can easily create a facet grid that plots bikes hired by month and year.</p>
+<p>We can easily create a facet grid that plots bikes hired by month and year.
+image: tfl_distributions_monthly.png</p>
 <p><img src="C:/Users/walte/Documents/my_website/images/tfl_distributions_monthly.png" width="100%" style="display: block; margin: auto;" /></p>
 <p>Look at May and Jun and compare 2020 with the previous years.</p>
 <p><img src="C:/Users/walte/Documents/my_website/images/tfl_monthly.png" width="100%" style="display: block; margin: auto;" /></p>
@@ -289,4 +290,5 @@ plot_weekly_difference &lt;- weekly_difference %&gt;%
 plot_weekly_difference</code></pre>
 <p><img src="/blogs/blog2_files/figure-html/unnamed-chunk-6-1.png" width="1440" style="display: block; margin: auto;" />
 &gt;Based on the two graphs above, we can observe that monthly and weekly activity can vary significantly from the average. Hence, given this strong variation, the Median would be a better metric to calculate expected rentals.</p>
+<p><em>Last updated:</em> 20 October, 2020</p>
 </div>
