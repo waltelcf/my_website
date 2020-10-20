@@ -3,7 +3,7 @@ categories:
 - ""
 - ""
 date: "2017-10-31T22:26:09-05:00"
-description: "An analysis on how COVID-19 impact the monthly change in TfL bike rentals"
+description: "An analysis on how COVID-19 impacted the monthly change in TfL bike rentals"
 draft: false
 image: Bike.jpg
 keywords: ""
@@ -21,12 +21,12 @@ title: Excess rentals in TfL bike sharing
 
 # Download TFL data to temporary file
 httr::GET(url, write_disk(bike.temp &lt;- tempfile(fileext = &quot;.xlsx&quot;)))</code></pre>
-<pre><code>## Response [https://airdrive-secure.s3-eu-west-1.amazonaws.com/london/dataset/number-bicycle-hires/2020-09-18T09%3A06%3A54/tfl-daily-cycle-hires.xlsx?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAJJDIMAIVZJDICKHA%2F20201020%2Feu-west-1%2Fs3%2Faws4_request&amp;X-Amz-Date=20201020T053627Z&amp;X-Amz-Expires=300&amp;X-Amz-Signature=cf9b1e23b28865913c0852e825d43570e2c990b687e033658a63afa4a4e41519&amp;X-Amz-SignedHeaders=host]
-##   Date: 2020-10-20 05:36
+<pre><code>## Response [https://airdrive-secure.s3-eu-west-1.amazonaws.com/london/dataset/number-bicycle-hires/2020-09-18T09%3A06%3A54/tfl-daily-cycle-hires.xlsx?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAJJDIMAIVZJDICKHA%2F20201020%2Feu-west-1%2Fs3%2Faws4_request&amp;X-Amz-Date=20201020T182900Z&amp;X-Amz-Expires=300&amp;X-Amz-Signature=30519e4f0fc3efd88e6c3271ef1e2f8511bc6ee89936d6c73b5e0bd0bb8eb629&amp;X-Amz-SignedHeaders=host]
+##   Date: 2020-10-20 18:29
 ##   Status: 200
 ##   Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
 ##   Size: 165 kB
-## &lt;ON DISK&gt;  C:\Users\walte\AppData\Local\Temp\RtmpS6ajLg\file62003d8a18b.xlsx</code></pre>
+## &lt;ON DISK&gt;  C:\Users\walte\AppData\Local\Temp\RtmpiGz464\file8ccc21486517.xlsx</code></pre>
 <pre class="r"><code># Use read_excel to read it as dataframe
 bike0 &lt;- read_excel(bike.temp,
                    sheet = &quot;Data&quot;,

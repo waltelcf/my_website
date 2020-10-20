@@ -82,8 +82,8 @@ disqusShortname = ""
     # To change the background image on the homepage banner, replace 'banner.jpg' in
     # the 'static/img' folder.
     title = "Hi, my name is Walter, and I love using R to analyze real world!"
-    subtitle = "This is my portfolio website where you will find a selection of my data analytic works"
-    buttonText = "My Data Analytic Work"
+    subtitle = "This is my portfolio website where you will find a selection of my data analytics works"
+    buttonText = "My Data Analytics Work"
 
 
   # Tiles Section
@@ -99,7 +99,7 @@ disqusShortname = ""
       
     [[params.tiles.showcase]]
       title = "Excess Rentals Bike Sharing"
-      subtitle = "How has COVID-19 affect the monthly travel"
+      subtitle = "How has COVID-19 affected the monthly travel"
       image = "Bike.jpg"
       url = "blogs/blog2"
   
@@ -142,9 +142,9 @@ disqusShortname = ""
     subtitle = """I'm excited that you found your way onto my portfolio website. 
     This is the place where I display my data analytics work as part of my current studies at London Business School.
     Please see my blogs by clicking the bottom below. You will find my selective projects and challenges in my pursuit to use R language explaining real world data. 
-    Stay tuned for more updates as I continue to explore the world of data analytic. Feel free to leave a comment below, I would love to hear your feedback!
+    Stay tuned for more updates as I continue to explore the world of data analytics. Feel free to leave a comment below, I would love to hear your feedback!
     """
-    buttonText = "My Data Analytic Work"
+    buttonText = "My Data Analytics Work"
     url = "blogs"
 
 

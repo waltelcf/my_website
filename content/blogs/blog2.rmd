@@ -3,7 +3,7 @@ categories:
 - ""
 - ""
 date: "2017-10-31T22:26:09-05:00"
-description: "An analysis on how COVID-19 impact the monthly change in TfL bike rentals"
+description: "An analysis on how COVID-19 impacted the monthly change in TfL bike rentals"
 draft: false
 image: Bike.jpg
 keywords: ""
