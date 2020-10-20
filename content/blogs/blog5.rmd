@@ -237,8 +237,7 @@ t.test(tim_ratings$rating, data=tim_ratings)
 
 ```
 
-##Visualization of confidence intervals for both directors
-
+## Visualization of confidence intervals for both directors
 
 ```{r,fig.width=9,fig.height=5.5}
 
