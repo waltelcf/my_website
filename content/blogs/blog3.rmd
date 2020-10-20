@@ -1,0 +1,196 @@
+---
+categories:
+- ""
+- ""
+date: "2017-10-31T22:26:13-05:00"
+description: 
+draft: false
+image: DJ.jpg
+keywords: ""
+slug: blog3
+title: DJIA
+---
+
+```{r, setup, echo=FALSE}
+knitr::opts_chunk$set(
+  message = FALSE, 
+  warning = FALSE, 
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+options(digits = 3)
+
+# default figure size
+knitr::opts_chunk$set(
+  fig.width=6.75, 
+  fig.height=6.75,
+  fig.align = "center"
+)
+```
+
+
+```{r load-libraries, warning=FALSE, message=FALSE, echo=FALSE}
+library(tidyverse)  # Load ggplot2, dplyr, and all the other tidyverse packages
+library(mosaic)
+library(ggthemes)
+library(lubridate)
+library(fivethirtyeight)
+library(here)
+library(skimr)
+library(janitor)
+library(vroom)
+library(tidyquant)
+library(rvest)    # scrape websites
+library(purrr)  
+library(lubridate) #to handle dates
+```
+>In order to perform analyses on on financial stocks, we have downloaded the following dataset.
+
+
+```{r}
+nyse <- read_csv(here::here("/data","nyse.csv"))
+
+```
+
+>Based on this dataset, we created a table and a bar plot that show the number of companies per sector, in descending order.
+
+```{r}
+nyse %>%
+  group_by(sector) %>%
+  summarise(count=n())%>%
+  arrange(desc(count))
+nyse %>%
+  group_by(sector) %>%
+  summarise(count=n())%>%
+  ggplot(aes(x=count, y=reorder(sector,count))) +
+  geom_col() +
+  labs(title="Number of companies per sector in NYSE ", 
+       x = "",
+       y = "") +
+  theme_hc()
+```
+>In order to analyse 30 stocks and its respective tickers plus the SP500 ETF, we are using the Dow Jones Industrial Average dataset.
+
+```{r}
+djia_url <- "https://en.wikipedia.org/wiki/Dow_Jones_Industrial_Average"
+
+tables <- djia_url %>% 
+  read_html() %>% 
+  html_nodes(css="table")
+
+djia <- map(tables, . %>% 
+               html_table(fill=TRUE)%>% 
+               clean_names())
+
+table1 <- djia[[2]] %>% 
+  mutate(date_added = ymd(date_added),
+         ticker = ifelse(str_detect(symbol, "NYSE*"),
+                          str_sub(symbol,7,11),
+                          symbol))
+
+tickers <- table1 %>% 
+  select(ticker) %>% 
+  pull() %>% 
+  c("SPY")
+
+myStocks <- tickers %>% 
+  tq_get(get  = "stock.prices",
+         from = "2000-01-01",
+         to   = "2020-08-31") %>%
+  group_by(symbol) 
+
+glimpse(myStocks)
+```
+
+>In order to perform sound analysis, we have now calculated daily, monthly and yearly returns for all stock tickers and created new datasets for those.
+
+
+```{r}
+myStocks_returns_daily <- myStocks %>%
+  tq_transmute(select     = adjusted, 
+               mutate_fun = periodReturn, 
+               period     = "daily", 
+               type       = "log",
+               col_rename = "daily_returns",
+               cols = c(nested.col))  
+
+myStocks_returns_monthly <- myStocks %>%
+  tq_transmute(select     = adjusted, 
+               mutate_fun = periodReturn, 
+               period     = "monthly", 
+               type       = "arithmetic",
+               col_rename = "monthly_returns",
+               cols = c(nested.col)) 
+
+myStocks_returns_annual <- myStocks %>%
+  group_by(symbol) %>%
+  tq_transmute(select     = adjusted, 
+               mutate_fun = periodReturn, 
+               period     = "yearly", 
+               type       = "arithmetic",
+               col_rename = "yearly_returns",
+               cols = c(nested.col))
+```
+
+>We have now created a dataframe and assigned it to a new object, where we summarised monthly returns since 2017-01-01 for each of the stocks and the SPY ETF; min, max, median, mean, SD.
+
+
+```{r}
+summarise_monthly_returns <- myStocks_returns_monthly %>%
+  group_by(symbol) %>%
+  summarise(min_return=min(monthly_returns),
+            max_return=max(monthly_returns),
+            median_return=median(monthly_returns),
+            average_return=mean(monthly_returns),
+            standard_deviation=STDEV(monthly_returns)) %>% 
+print(summarise_monthly_returns)
+```
+
+>We now went on to plot a density plot for each of the stocks.
+
+```{r}
+myStocks_returns_monthly %>%
+  group_by(symbol)%>%
+  ggplot(aes(x=monthly_returns))+
+    geom_density()+
+    facet_wrap(~symbol)+
+    labs(title = "Monthly returns of stock",
+         subtitle = "Density plot showing monthly performance of stock",
+         x = "Monthly return",
+         y = "Density") +
+    theme_hc() 
+```
+
+```{r}
+myStocks_returns_monthly %>%
+  group_by(symbol)%>%
+  ggplot(aes(x=monthly_returns,color=symbol))+
+    geom_density(fill="white",position="identity")+
+    theme_hc()
+```
+
+```{r}
+myStocks_returns_monthly %>% 
+  group_by(symbol) %>%
+  summarise(kurtosis=kurtosis(monthly_returns), standard_deviation=STDEV(monthly_returns)) %>% 
+  arrange(desc(standard_deviation))
+```
+>The density plot provides information about the distribution of returns for each stock. Inferring from the plot, we analyzed both the standard deviation and the kurtosis for each of the distribution chart. In statistics, kurtosis measures the “tailedness” of the probability distribution, while standard deviation measures the amount of variation of the data set. Generally speaking, the stock with the highest kurtosis and the lowest standard deviation would be the least risky, while the stock with the lowest kurtosis and the highest standard deviation would be the riskiest. From the plot and statistics above, the DOW stock is the riskiest, while AXP stock is the least risky.
+
+>Finally, we produced a plot that shows the expected monthly return of a stock and the risk.
+
+```{r}
+summarise_monthly_returns %>%
+  ggplot(aes(x=standard_deviation,y=average_return,label=symbol))+
+  geom_point()+
+  ggrepel::geom_text_repel()+
+  labs(title = "Risk vs Return of Stock", 
+       subtitle = "Scatter Plot showing Expected Return over Standard Deviation",
+       x = "Standard Deviation",
+       y = "Expected Return") +
+  theme_hc()
+```
+
+>The general rule in finance is the positive correlation between risk and return. In other words, if a stock has a high expected return, it is also expected to have a high standard deviation. However, in this scatter plot, there is no obvious trend to be identified. Thus, I will compute the correlation between the expected return and the standard deviation.
+
+>The stocks DOW, CSCO, INTC in particular are relatively risky since their standard deviation is among the highest of the set, thus intuitively we would expect to see a relatively high expected return. Instead, these 3 stocks perform relatively poorly in terms of stock returns. When focusing solely on CSCO (CISCO Systems), we can deduct that their past performance over the last 9 months was very volatile. During the period of Covid-19, CISCO experienced increased usage due to physical work shifting to the virtual space. However, CISCO has since not been able to upkeep this performance, especially due to a strong peer group.
+

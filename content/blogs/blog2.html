@@ -13,16 +13,19 @@ title: Excess Rentals Bike Sharing
 
 
 
+<blockquote>
+<p>In this assignment, we are trying to analysis the potential effect of COVID-19 on the biking sharing.</p>
+</blockquote>
 <pre class="r"><code>url &lt;- &quot;https://data.london.gov.uk/download/number-bicycle-hires/ac29363e-e0cb-47cc-a97a-e216d900a6b0/tfl-daily-cycle-hires.xlsx&quot;
 
 # Download TFL data to temporary file
 httr::GET(url, write_disk(bike.temp &lt;- tempfile(fileext = &quot;.xlsx&quot;)))</code></pre>
-<pre><code>## Response [https://airdrive-secure.s3-eu-west-1.amazonaws.com/london/dataset/number-bicycle-hires/2020-09-18T09%3A06%3A54/tfl-daily-cycle-hires.xlsx?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAJJDIMAIVZJDICKHA%2F20201019%2Feu-west-1%2Fs3%2Faws4_request&amp;X-Amz-Date=20201019T232830Z&amp;X-Amz-Expires=300&amp;X-Amz-Signature=cc9e110f5fd6fb9519a4e5f2f9e9b33fc1aef4a2b3cf995291e8733b690719ef&amp;X-Amz-SignedHeaders=host]
-##   Date: 2020-10-19 23:29
+<pre><code>## Response [https://airdrive-secure.s3-eu-west-1.amazonaws.com/london/dataset/number-bicycle-hires/2020-09-18T09%3A06%3A54/tfl-daily-cycle-hires.xlsx?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIAJJDIMAIVZJDICKHA%2F20201020%2Feu-west-1%2Fs3%2Faws4_request&amp;X-Amz-Date=20201020T002221Z&amp;X-Amz-Expires=300&amp;X-Amz-Signature=e56d9674a6c0941615c9e2180bb1cf06250bbdfaf2234a711168b70b539bcec6&amp;X-Amz-SignedHeaders=host]
+##   Date: 2020-10-20 00:22
 ##   Status: 200
 ##   Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
 ##   Size: 165 kB
-## &lt;ON DISK&gt;  C:\Users\walte\AppData\Local\Temp\RtmpeKvfqo\file88685e917173.xlsx</code></pre>
+## &lt;ON DISK&gt;  C:\Users\walte\AppData\Local\Temp\Rtmp69kpJS\file61a06c0f5b7c.xlsx</code></pre>
 <pre class="r"><code># Use read_excel to read it as dataframe
 bike0 &lt;- read_excel(bike.temp,
                    sheet = &quot;Data&quot;,
@@ -35,7 +38,9 @@ bike &lt;- bike0 %&gt;%
   mutate (year = year(day),
           month = lubridate::month(day, label = TRUE),
           week = isoweek(day))</code></pre>
+<blockquote>
 <p>We can easily create a facet grid that plots bikes hired by month and year.</p>
+</blockquote>
 <pre class="r"><code>#We first start by calculating the historic monthly average between 2015 and 2019
 historic_average &lt;- bike %&gt;%
   filter(year %in% c(2015,2016,2017,2018,2019))%&gt;%

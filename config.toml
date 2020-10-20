@@ -92,11 +92,23 @@ disqusShortname = ""
     # Display your showcases here.
     
     [[params.tiles.showcase]]
-      title = "IMBD"
-      subtitle = "Differences between directors"
-      image = "Movie.jpg"
-      url = "blogs/blog5"
-
+      title = "Climate"
+      subtitle = "Climate change is real"
+      image = "Climate.jpg"
+      url = "blogs/blog1" 
+      
+    [[params.tiles.showcase]]
+      title = "Excess Rentals Bike Sharing"
+      subtitle = "How has COVID-19 affect the monthly travel"
+      image = "Bike.jpg"
+      url = "blogs/blog2"
+  
+   [[params.tiles.showcase]]
+      title = "DJIA"
+      subtitle = "Returns of financial stocks"
+      image = "DJ.jpg"
+      url = "blogs/blog3"
+      
     [[params.tiles.showcase]]
       title = "Yield Curve Inversion"
       subtitle = "plot the yield curves since 1999 to see when the yield curves flatten"
@@ -104,22 +116,12 @@ disqusShortname = ""
       url = "blogs/blog4"
 
     [[params.tiles.showcase]]
-      title = "Excess Rentals Bike Sharing"
-      subtitle = "How has COVID-19 affect the monthly travel"
-      image = "Bike.jpg"
-      url = "blogs/blog2"
+      title = "IMBD"
+      subtitle = "Differences between directors"
+      image = "Movie.jpg"
+      url = "blogs/blog5"
 
-    [[params.tiles.showcase]]
-      title = "Climate"
-      subtitle = "Climate change is real"
-      image = "Climate.jpg"
-      url = "blogs/blog1"
-
-    [[params.tiles.showcase]]
-      title = "Consequat"
-      subtitle = "Ipsum Dolor Sit Amet"
-      image = "pic05.jpg"
-      url = "blogs/ipsum"
+    
 
     [[params.tiles.showcase]]
       title = "Etiam"

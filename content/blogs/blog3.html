@@ -1,0 +1,203 @@
+---
+categories:
+- ""
+- ""
+date: "2017-10-31T22:26:13-05:00"
+description: 
+draft: false
+image: DJ.jpg
+keywords: ""
+slug: blog3
+title: DJIA
+---
+
+
+
+<blockquote>
+<p>In order to perform analyses on on financial stocks, we have downloaded the following dataset.</p>
+</blockquote>
+<pre class="r"><code>nyse &lt;- read_csv(here::here(&quot;/data&quot;,&quot;nyse.csv&quot;))</code></pre>
+<blockquote>
+<p>Based on this dataset, we created a table and a bar plot that show the number of companies per sector, in descending order.</p>
+</blockquote>
+<pre class="r"><code>nyse %&gt;%
+  group_by(sector) %&gt;%
+  summarise(count=n())%&gt;%
+  arrange(desc(count))</code></pre>
+<pre><code>## # A tibble: 12 x 2
+##    sector                count
+##    &lt;chr&gt;                 &lt;int&gt;
+##  1 Finance                  97
+##  2 Consumer Services        79
+##  3 Public Utilities         60
+##  4 Capital Goods            45
+##  5 Health Care              45
+##  6 Energy                   42
+##  7 Technology               40
+##  8 Basic Industries         39
+##  9 Consumer Non-Durables    31
+## 10 Miscellaneous            12
+## 11 Transportation           10
+## 12 Consumer Durables         8</code></pre>
+<pre class="r"><code>nyse %&gt;%
+  group_by(sector) %&gt;%
+  summarise(count=n())%&gt;%
+  ggplot(aes(x=count, y=reorder(sector,count))) +
+  geom_col() +
+  labs(title=&quot;Number of companies per sector in NYSE &quot;, 
+       x = &quot;&quot;,
+       y = &quot;&quot;) +
+  theme_hc()</code></pre>
+<p><img src="/blogs/blog3_files/figure-html/unnamed-chunk-2-1.png" width="648" style="display: block; margin: auto;" />
+&gt;In order to analyse 30 stocks and its respective tickers plus the SP500 ETF, we are using the Dow Jones Industrial Average dataset.</p>
+<pre class="r"><code>djia_url &lt;- &quot;https://en.wikipedia.org/wiki/Dow_Jones_Industrial_Average&quot;
+
+tables &lt;- djia_url %&gt;% 
+  read_html() %&gt;% 
+  html_nodes(css=&quot;table&quot;)
+
+djia &lt;- map(tables, . %&gt;% 
+               html_table(fill=TRUE)%&gt;% 
+               clean_names())
+
+table1 &lt;- djia[[2]] %&gt;% 
+  mutate(date_added = ymd(date_added),
+         ticker = ifelse(str_detect(symbol, &quot;NYSE*&quot;),
+                          str_sub(symbol,7,11),
+                          symbol))
+
+tickers &lt;- table1 %&gt;% 
+  select(ticker) %&gt;% 
+  pull() %&gt;% 
+  c(&quot;SPY&quot;)
+
+myStocks &lt;- tickers %&gt;% 
+  tq_get(get  = &quot;stock.prices&quot;,
+         from = &quot;2000-01-01&quot;,
+         to   = &quot;2020-08-31&quot;) %&gt;%
+  group_by(symbol) 
+
+glimpse(myStocks)</code></pre>
+<pre><code>## Rows: 153,121
+## Columns: 8
+## Groups: symbol [31]
+## $ symbol   &lt;chr&gt; &quot;MMM&quot;, &quot;MMM&quot;, &quot;MMM&quot;, &quot;MMM&quot;, &quot;MMM&quot;, &quot;MMM&quot;, &quot;MMM&quot;, &quot;MMM&quot;, &quot;M...
+## $ date     &lt;date&gt; 2000-01-03, 2000-01-04, 2000-01-05, 2000-01-06, 2000-01-0...
+## $ open     &lt;dbl&gt; 48.0, 46.4, 45.6, 47.2, 50.6, 50.2, 50.4, 51.0, 50.7, 50.4...
+## $ high     &lt;dbl&gt; 48.2, 47.4, 48.1, 51.2, 51.9, 51.8, 51.2, 51.8, 50.9, 50.5...
+## $ low      &lt;dbl&gt; 47.0, 45.3, 45.6, 47.2, 50.0, 50.0, 50.2, 50.4, 50.2, 49.5...
+## $ close    &lt;dbl&gt; 47.2, 45.3, 46.6, 50.4, 51.4, 51.1, 50.2, 50.4, 50.4, 49.7...
+## $ volume   &lt;dbl&gt; 2173400, 2713800, 3699400, 5975800, 4101200, 3863800, 2357...
+## $ adjusted &lt;dbl&gt; 25.9, 24.8, 25.5, 27.6, 28.1, 28.0, 27.5, 27.6, 27.6, 27.2...</code></pre>
+<blockquote>
+<p>In order to perform sound analysis, we have now calculated daily, monthly and yearly returns for all stock tickers and created new datasets for those.</p>
+</blockquote>
+<pre class="r"><code>myStocks_returns_daily &lt;- myStocks %&gt;%
+  tq_transmute(select     = adjusted, 
+               mutate_fun = periodReturn, 
+               period     = &quot;daily&quot;, 
+               type       = &quot;log&quot;,
+               col_rename = &quot;daily_returns&quot;,
+               cols = c(nested.col))  
+
+myStocks_returns_monthly &lt;- myStocks %&gt;%
+  tq_transmute(select     = adjusted, 
+               mutate_fun = periodReturn, 
+               period     = &quot;monthly&quot;, 
+               type       = &quot;arithmetic&quot;,
+               col_rename = &quot;monthly_returns&quot;,
+               cols = c(nested.col)) 
+
+myStocks_returns_annual &lt;- myStocks %&gt;%
+  group_by(symbol) %&gt;%
+  tq_transmute(select     = adjusted, 
+               mutate_fun = periodReturn, 
+               period     = &quot;yearly&quot;, 
+               type       = &quot;arithmetic&quot;,
+               col_rename = &quot;yearly_returns&quot;,
+               cols = c(nested.col))</code></pre>
+<blockquote>
+<p>We have now created a dataframe and assigned it to a new object, where we summarised monthly returns since 2017-01-01 for each of the stocks and the SPY ETF; min, max, median, mean, SD.</p>
+</blockquote>
+<pre class="r"><code>summarise_monthly_returns &lt;- myStocks_returns_monthly %&gt;%
+  group_by(symbol) %&gt;%
+  summarise(min_return=min(monthly_returns),
+            max_return=max(monthly_returns),
+            median_return=median(monthly_returns),
+            average_return=mean(monthly_returns),
+            standard_deviation=STDEV(monthly_returns)) %&gt;% 
+print(summarise_monthly_returns)</code></pre>
+<pre><code>## # A tibble: 31 x 6
+##    symbol min_return max_return median_return average_return standard_deviation
+##    &lt;chr&gt;       &lt;dbl&gt;      &lt;dbl&gt;         &lt;dbl&gt;          &lt;dbl&gt;              &lt;dbl&gt;
+##  1 AAPL       -0.577      0.454        0.0352        0.0275              0.116 
+##  2 AMGN       -0.170      0.328        0.0104        0.00916             0.0738
+##  3 AXP        -0.279      0.875        0.0102        0.00824             0.0918
+##  4 BA         -0.458      0.257        0.0179        0.0120              0.0887
+##  5 CAT        -0.353      0.350        0.0133        0.0143              0.0908
+##  6 CRM        -0.360      0.403        0.0205        0.0276              0.113 
+##  7 CSCO       -0.367      0.389        0.0125        0.00495             0.0971
+##  8 CVX        -0.224      0.270        0.0122        0.00852             0.0630
+##  9 DIS        -0.268      0.234        0.0107        0.00981             0.0725
+## 10 DOW        -0.276      0.255        0.0456        0.00898             0.128 
+## # ... with 21 more rows</code></pre>
+<blockquote>
+<p>We now went on to plot a density plot for each of the stocks.</p>
+</blockquote>
+<pre class="r"><code>myStocks_returns_monthly %&gt;%
+  group_by(symbol)%&gt;%
+  ggplot(aes(x=monthly_returns))+
+    geom_density()+
+    facet_wrap(~symbol)+
+    labs(title = &quot;Monthly returns of stock&quot;,
+         subtitle = &quot;Density plot showing monthly performance of stock&quot;,
+         x = &quot;Monthly return&quot;,
+         y = &quot;Density&quot;) +
+    theme_hc() </code></pre>
+<p><img src="/blogs/blog3_files/figure-html/unnamed-chunk-6-1.png" width="648" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>myStocks_returns_monthly %&gt;%
+  group_by(symbol)%&gt;%
+  ggplot(aes(x=monthly_returns,color=symbol))+
+    geom_density(fill=&quot;white&quot;,position=&quot;identity&quot;)+
+    theme_hc()</code></pre>
+<p><img src="/blogs/blog3_files/figure-html/unnamed-chunk-7-1.png" width="648" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>myStocks_returns_monthly %&gt;% 
+  group_by(symbol) %&gt;%
+  summarise(kurtosis=kurtosis(monthly_returns), standard_deviation=STDEV(monthly_returns)) %&gt;% 
+  arrange(desc(standard_deviation))</code></pre>
+<pre><code>## # A tibble: 31 x 3
+##    symbol kurtosis standard_deviation
+##    &lt;chr&gt;     &lt;dbl&gt;              &lt;dbl&gt;
+##  1 DOW     -0.0377             0.128 
+##  2 AAPL     3.33               0.116 
+##  3 CRM      1.11               0.113 
+##  4 CSCO     2.22               0.0971
+##  5 INTC     2.54               0.0967
+##  6 GS       0.866              0.0924
+##  7 AXP     31.4                0.0918
+##  8 CAT      1.88               0.0908
+##  9 BA       3.45               0.0887
+## 10 JPM      1.11               0.0876
+## # ... with 21 more rows</code></pre>
+<blockquote>
+<p>The density plot provides information about the distribution of returns for each stock. Inferring from the plot, we analyzed both the standard deviation and the kurtosis for each of the distribution chart. In statistics, kurtosis measures the “tailedness” of the probability distribution, while standard deviation measures the amount of variation of the data set. Generally speaking, the stock with the highest kurtosis and the lowest standard deviation would be the least risky, while the stock with the lowest kurtosis and the highest standard deviation would be the riskiest. From the plot and statistics above, the DOW stock is the riskiest, while AXP stock is the least risky.</p>
+</blockquote>
+<blockquote>
+<p>Finally, we produced a plot that shows the expected monthly return of a stock and the risk.</p>
+</blockquote>
+<pre class="r"><code>summarise_monthly_returns %&gt;%
+  ggplot(aes(x=standard_deviation,y=average_return,label=symbol))+
+  geom_point()+
+  ggrepel::geom_text_repel()+
+  labs(title = &quot;Risk vs Return of Stock&quot;, 
+       subtitle = &quot;Scatter Plot showing Expected Return over Standard Deviation&quot;,
+       x = &quot;Standard Deviation&quot;,
+       y = &quot;Expected Return&quot;) +
+  theme_hc()</code></pre>
+<p><img src="/blogs/blog3_files/figure-html/unnamed-chunk-9-1.png" width="648" style="display: block; margin: auto;" /></p>
+<blockquote>
+<p>The general rule in finance is the positive correlation between risk and return. In other words, if a stock has a high expected return, it is also expected to have a high standard deviation. However, in this scatter plot, there is no obvious trend to be identified. Thus, I will compute the correlation between the expected return and the standard deviation.</p>
+</blockquote>
+<blockquote>
+<p>The stocks DOW, CSCO, INTC in particular are relatively risky since their standard deviation is among the highest of the set, thus intuitively we would expect to see a relatively high expected return. Instead, these 3 stocks perform relatively poorly in terms of stock returns. When focusing solely on CSCO (CISCO Systems), we can deduct that their past performance over the last 9 months was very volatile. During the period of Covid-19, CISCO experienced increased usage due to physical work shifting to the virtual space. However, CISCO has since not been able to upkeep this performance, especially due to a strong peer group.</p>
+</blockquote>
